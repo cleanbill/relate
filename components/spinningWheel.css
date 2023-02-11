@@ -1,0 +1,40 @@
+.spinning-wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.spinning-wheel-segments {
+  display: flex;
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.spinning-wheel-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 50%;
+  font-size: 18px;
+  color: #fff;
+  position: absolute;
+  transition: transform 1s ease-out;
+}
+
+.spinning-wheel-segment.selected {
+  transform: rotate(360deg);
+}
+
+.spinning-wheel-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
