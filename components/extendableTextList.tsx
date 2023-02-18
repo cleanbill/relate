@@ -23,6 +23,7 @@ export type Props = {
     onChange: Function;
     defaultFields: Array<Field>;
     setFields: Function;
+    next: Function;
 }
 
 const grid = 8;
@@ -84,6 +85,15 @@ const ExtendableTextList = (props: Props) => {
         ]);
     }
 
+    const tomorrow = (index: number) => {
+        const move =  props.defaultFields[index];
+        props.setFields([
+            ...props.defaultFields.slice(0, index),
+            ...props.defaultFields.slice(index + 1, props.defaultFields.length)
+        ]);
+        props.next(move);
+    }
+
     return (
         <>
             <DndContext
@@ -96,7 +106,7 @@ const ExtendableTextList = (props: Props) => {
                     {props.defaultFields.map((field: Field, index: number) => (
                         <div key={index}>
                             <SortableItem key={index} id={index} handle={true} value={field.value} onReturn={() => add()}
-                                onChange={fieldChange} delete={(id: number) => deleteField(id)}
+                                onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
                             />
                         </div>))}
                     <DragOverlay>
@@ -109,7 +119,7 @@ const ExtendableTextList = (props: Props) => {
                 </SortableContext>
             </DndContext>
 
-            <button onClick={() => add()} className="mt-3 mr-3 justify-self-end text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium ml-7 rounded-lg text-sm px-2 w-11/12 h-7  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">ADD</button>
+            <button onClick={() => add()} className="butt w-full h-7">ADD</button>
         </>
     );
 }

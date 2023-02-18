@@ -7,6 +7,7 @@ import Groups from '../components/groups';
 import FieldForm from '../components/fieldForm';
 import { establish } from '../utils/stateHelper';
 import SpinWheel from '../components/spinner';
+import { groups } from 'd3';
 
 export enum ComponentType {
     NONE = "N/A",
@@ -28,8 +29,8 @@ export enum FieldType {
     "url" = "url",
     "week" = "week",
     "date" = "date",
-    "happy" = "Happy",
-    "textlist" = "Text List"
+    "happy" = "happy",
+    "list" = "list"
 }
 const fieldTypesArray = ():Array<String> =>{
     const result = new Array<String>();
@@ -77,13 +78,13 @@ const createDayTitleData = (day: string): TitleData => {
     const ETLField = {
         componentType: ComponentType.ETL,
         fieldName: day,
-        fieldType: FieldType.textlist,
+        fieldType: FieldType.list,
         value: "",
         list: Array<Field>()
     } as Field;
     fields.push(ETLField);
     const session = { group: 'todo', title: day, mark: day, fields }
-    return { titleName, singleton: true, sessions: { day: session } }
+    return { titleName, singleton: true, sessions: { 'single' : session } }
 }
 
 const createTodoGroup = (): GroupData => {
@@ -104,9 +105,10 @@ const Home: NextPage = () => {
     const [groupDataList, setGroupDataList] = useState([] as Array<GroupData>);
     const [group, setGroup] = useState("");
     const [title, setTitle] = useState("");
-    const [singleton, setSingleton] = useState(false);
     const [fields, setFields] = useState([] as Array<Field>);
     const [mark, setMark] = useState('Unsaved');
+
+    const isSingleton = (fds: Field[]) => fds[0]?.componentType == ComponentType.ETL;
 
     useEffect(() => {
         const startingData = establish<Array<GroupData>>("groups", groupDataList, setGroupDataList);
@@ -121,21 +123,28 @@ const Home: NextPage = () => {
         const startTitleKey = titleKeys[titleKeys.length - 1]; // get first title... same as above, perhaps should be in A...Z order
         const startTitle = startGroup.titles[startTitleKey];
         setTitle(startTitle.titleName);
-        setSingleton(startTitle.singleton);
         const sessionKeys = Object.keys(startTitle.sessions);
         const startSession = startTitle.sessions[sessionKeys[0]]; // get first session... should be in date order
-        setFields(startSession.fields);
+        updateFields(startSession.fields);
     }, []);
 
     const getComponentType = (fieldType:FieldType):ComponentType =>{
         if (fieldType == FieldType.happy){
             return ComponentType.HAPPY;
         }
-        if (fieldType == FieldType.textlist){
+        if (fieldType == FieldType.list){
             return ComponentType.ETL;
         }
 
         return ComponentType.NONE;
+    }
+
+    const updateFields = (fields:Array<Field>) => 
+        setFields(fields.map(field => fillInComponentType(field)));  
+
+    const fillInComponentType = (field:Field):Field => {
+        field.componentType = getComponentType(field.fieldType);
+        return field;
     }
 
     const updateField = (index: number) => {
@@ -145,7 +154,7 @@ const Home: NextPage = () => {
         const fieldType = fieldTypeElement.value as FieldType;
         const componentType = getComponentType(fieldType);
         const updatedList = fields.map((field, i) => (i == index) ? { fieldName, fieldType, componentType, value: '' } as Field : field);
-        setFields([...updatedList]);
+        updateFields([...updatedList]);
     }
 
     const getValue = (target: HTMLInputElement): string => {
@@ -162,15 +171,15 @@ const Home: NextPage = () => {
         if (list) {
             fields[index].list = list;
         }
-        setFields([...fields]);
+        updateFields([...fields]);
     }
 
     const add = () => {
-        setFields([...fields, { id: fields.length, fieldName: '', fieldType: FieldType.text, componentType: ComponentType.NONE, value: 'what' }])
+        updateFields([...fields, { id: fields.length, fieldName: '', fieldType: FieldType.text, componentType: ComponentType.NONE, value: '' }])
     }
 
     const overrideFields = (fields: Array<Field>, mark: string) => {
-        setFields([...fields]);
+        updateFields([...fields]);
         setMark(mark);
     }
 
@@ -180,8 +189,9 @@ const Home: NextPage = () => {
         const startSession = titleData.sessions[sessionKeys[0]]; // get first session... should be in date order
         setGroup(gd.groupName);
         setTitle(title);
-        setSingleton(titleData.singleton);
-        setFields(startSession.fields);
+        const startFields = startSession.fields.map(field => fillInComponentType(field));
+        updateFields(startFields);
+        titleData.singleton = isSingleton(startFields);
         if (titleData.sessions){
             setMark('');
         }
@@ -189,7 +199,7 @@ const Home: NextPage = () => {
 
     const take = (index: number) => {
         const newList = fields.filter((_, i) => index != i);
-        setFields([...newList]);
+        updateFields([...newList]);
         const fieldNameElement = document.getElementById('fieldName-' + newList.length) as HTMLInputElement;
         fieldNameElement.focus();
     }
@@ -260,6 +270,7 @@ const Home: NextPage = () => {
         const session = getCurrentSession();
         const sessions: Record<string, Session> = {};
         sessions[session.mark] = session;
+        const singleton = isSingleton(session.fields);    
         const titleData: TitleData = { titleName: title, sessions, singleton }
         return titleData;
     }
@@ -312,6 +323,20 @@ const Home: NextPage = () => {
         // console.log(await what.json());
     }
 
+    const next = (field:Field) => {
+        const selectedGroup = groupDataList.find((groupData:GroupData)=>groupData.groupName == group);
+        if (!selectedGroup){
+            return;
+        }
+        const titleKeys = Object.keys(selectedGroup.titles);
+        const titleIndex = titleKeys.indexOf(title);
+        const nextIndex = titleIndex+1 == titleKeys.length? 0: titleIndex+1;
+        const titleKey = titleKeys[nextIndex];
+        const titleData = selectedGroup.titles[titleKey];
+        const session = titleData.sessions['single'];
+        session.fields[0].list?.unshift(field);
+    }
+
     return (
         <div className="bg-blue-200">
             <div className="bg-blue-200 grid grid-cols-3 w-100 gap-10 h-full">
@@ -330,6 +355,7 @@ const Home: NextPage = () => {
                 <div className='col-span-2'>
                     <a href="#" className="block mt-2 p-6 mr-3 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <FieldForm
+                            next={(field:Field)  => next(field)}
                             title={title}
                             fields={fields}
                             updateFieldData={updateFieldData}
@@ -342,12 +368,11 @@ const Home: NextPage = () => {
             </div>
             <div className="bg-blue-200 grid grid-cols-2 w-100 gap-10 h-full">
 
-                <button onClick={importData} className="mt-3 ml-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-2 w-20 h-10 f dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Import</button>
+                <button onClick={importData} className="butt justify-self-start ml-3">Import</button>
                 <input type="file" hidden
-                    className="mt-3 mr-3 justify-self-end text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-2 w-20 h-10  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                     id="export" name="export"
                     accept="application/json" onChange={importData} />
-                <button onClick={exportData} className="mt-3 mr-3 justify-self-end text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-2 w-20 h-10  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Export</button>
+                <button onClick={exportData} className="butt justify-self-end">Export</button>
             </div>
             <a href="#" className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <Define

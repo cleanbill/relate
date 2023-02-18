@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { TitleData } from "../app/page";
+import { Field, TitleData } from "../app/page";
 import { showDate } from "../utils/renderHelper";
 
 interface HistoryState { titleData: TitleData, keys: Array<string>, selected: string };
@@ -15,12 +15,12 @@ const History = (props:HistoryProps) =>{
     const [state, setState] = useState({
         titleData: { titleName: 'No History', sessions: {} },
         keys: new Array(),
-        selected: ''
+        selected: '',
     } as HistoryState);
 
    const resetState = (props: HistoryProps) => {
         const sessions = props.titleData.sessions;
-        if (!sessions) {
+        if (!sessions ) {
             return;
         }
         const keys = Object.keys(sessions) as Array<string>;
@@ -42,13 +42,21 @@ const History = (props:HistoryProps) =>{
 
     return (
         <div >
-            {state?.keys && state.keys.map((key: string) => (
+            {props.titleData.singleton && props.titleData.sessions['single']?.fields[0]?.list.map((field: Field, index:number) => (
+                <div className="w-100 mt-4" key={index}>
+
+                    <div className="grid grid-cols-[11fr,1fr] h-4">
+                        <button onClick={() => show('single')} className="whitespace-nowrap h-10"> {field.value}</button>
+                        <button onClick={() => del('single')} className="butt mb-10 w-6 h-5 bg-red-400">X</button>
+                    </div>
+                </div>
+            ))}
+            {!props.titleData.singleton && state?.keys &&  state.keys.map((key: string) => (
                 <div className="w-100 mt-4" key={key}>
 
-                    <div className="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-
-                        <div onClick={() => show(key)} className="flex-1 ml-3 w-8 whitespace-nowrap">{showDate(key)}</div>
-                        <div onClick={() => del(key)} className="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium dark:bg-red-600 dark:hover:bg-red-600 dark:focus:ring-red-900 text-white  bg-red-100 hover:bg-red-800">X</div>
+                    <div className="grid grid-cols-[11fr,1fr] h-4">
+                        <button onClick={() => show(key)} className="whitespace-nowrap h-10">{showDate(key)}</button>
+                        <button onClick={() => del(key)} className="butt mb-10 w-6 h-5 bg-red-400">X</button>
                     </div>
                 </div>
             ))}

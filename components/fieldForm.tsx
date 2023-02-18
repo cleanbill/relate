@@ -8,7 +8,8 @@ interface FieldFormState { title: string, fields: Array<Field>, mark: string };
 interface FieldFormProps {
     title: string, fields: Array<Field>, mark: string,
     updateFieldData: Function,
-    saveData: Function
+    saveData: Function,
+    next: Function
 };
 
 const FieldForm = (props:FieldFormProps) => {
@@ -45,6 +46,10 @@ const FieldForm = (props:FieldFormProps) => {
         setState(old => ({ title: old.title, fields: [... old.fields], mark: old.mark }));
     }
 
+    const moveToNext = (field:Field) =>{
+        props.next(field);
+    }
+
     useEffect(() =>{
         setState(() => ({ title: props.title, fields: [... props.fields], mark: props.mark }));
     }, [props])
@@ -71,7 +76,8 @@ const FieldForm = (props:FieldFormProps) => {
                                     ></Happy>
                                 }
                                 {field.componentType == ComponentType.ETL &&
-                                    <ExtendableTextList onChange={(value: string) => props.updateFieldData(index, value)}
+                                    <ExtendableTextList next={(field:Field) => moveToNext(field)} 
+                                        onChange={(value: string) => props.updateFieldData(index, value)}
                                         defaultFields={field.list || []} setFields={(fields:Array<Field>) => 
                                             props.updateFieldData(index, null, fields)}
                                     ></ExtendableTextList>
@@ -80,9 +86,9 @@ const FieldForm = (props:FieldFormProps) => {
                         ))}
                     </div>
                     <div className="grid grid-cols-3">
-                        <button type="submit" onClick={e => clearAllData()} className=" text-white bg-blue-700 float-right hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Reset</button>
+                        <button type="submit" onClick={e => clearAllData()} className="butt justify-self-start">Reset</button>
                         <div></div>
-                        <button type="submit" onClick={e => props.saveData()} className="w-50 text-white bg-blue-700 float-right hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
+                        <button type="submit" onClick={e => props.saveData()} className="butt justify-self-end">Save</button>
                     </div>
                 </>)}
         </>

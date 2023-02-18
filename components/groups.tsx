@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { GroupData } from "../app/page";
+import { GroupData, TitleData } from "../app/page";
 import History from '../components/history';
 
 interface GroupsState { groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null };
@@ -38,6 +38,17 @@ const Groups = (props: GroupsProps) => {
         }))
     }
 
+    const showHistory = (td:TitleData): boolean =>{
+        if (td.singleton && td.titleName != state.selectedTitle){
+            return true;
+        }
+        if (!td.singleton && td.titleName == state.selectedTitle){
+            return true;
+        }
+
+        return false;
+    }
+
     const baseClass = "p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-yellow-900";
 
     return (
@@ -46,8 +57,8 @@ const Groups = (props: GroupsProps) => {
             <div className="font-normal text-gray-700 dark:text-gray-400">
                 {state.groups.map((gd: GroupData, index: number) => (
                     <div key={index}>
-                        <button onClick={() => toggle(index)} type="button" className="flex items-center justify-between w-full p-5 font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                            <span>{gd.groupName} </span>
+                        <button onClick={() => toggle(index)} type="button" className="flex items-center justify-between w-full p-5 font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-yellow-600 dark:hover:bg-gray-800 bg-yellow-400 dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <span className={gd.display ? 'text-white': 'text-stone-700'}>{gd.groupName}</span>
                         </button>
                         {gd.display &&
                             Object.keys(gd.titles).map((key: string, i: number) => (
@@ -55,8 +66,8 @@ const Groups = (props: GroupsProps) => {
                                 <div key={key} id={'selected-' + i}  className={baseClass} >
                                     <div className="mb-2 text-gray-500 dark:text-gray-400">
                                         {gd.titles[key].titleName == state.selectedTitle && (<span></span>)}
-                                        <b onClick={() => selectTitle(gd, gd.titles[key].titleName)}>{i + 1} . {gd.titles[key].titleName} </b>
-                                        {!gd.titles[key].singleton && gd.titles[key].titleName == state.selectedTitle && (
+                                        <span className={gd.titles[key].titleName == state.selectedTitle? 'font-bold': ""} onClick={() => selectTitle(gd, gd.titles[key].titleName)}>{i + 1} . {gd.titles[key].titleName} </span>
+                                        { showHistory(gd.titles[key]) && (
                                             <History 
                                             titleData={gd.titles[key]} 
                                             overrideFields={props.overrideFields}
