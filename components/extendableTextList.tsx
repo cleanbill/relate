@@ -45,7 +45,7 @@ const ExtendableTextList = (props: Props) => {
             el.focus();
             el.value = props.defaultFields[props.defaultFields.length - 1].value;
         }
-    }, [focusId])
+    }, [focusId, props.defaultFields])
 
     const sensors = useSensors(
         useSensor(PointerSensor),

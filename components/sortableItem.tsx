@@ -18,7 +18,7 @@ const SortableItem = (props: { id: any, value: string, handle: boolean, manana: 
     element.value = props.value;
     console.log(props.id, ' is ', props.value);
     setField(props.value);
-  }, [])
+  }, [props])
 
 
   const keyup = (e: React.KeyboardEvent<HTMLInputElement>) => {
