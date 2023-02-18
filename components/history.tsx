@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { Field, TitleData } from "../app/page";
+import { TitleData, Field } from "../app/model";
 import { showDate } from "../utils/renderHelper";
 
 interface HistoryState { titleData: TitleData, keys: Array<string>, selected: string };
@@ -42,7 +42,9 @@ const History = (props:HistoryProps) =>{
 
     return (
         <div >
-            {props.titleData.singleton && props.titleData.sessions['single']?.fields[0]?.list.map((field: Field, index:number) => (
+            {props.titleData.singleton 
+                && props.titleData.sessions['single'].fields[0].list 
+                && props.titleData.sessions['single'].fields[0].list.map((field: Field, index:number) => (
                 <div className="w-100 mt-4" key={index}>
 
                     <div className="grid grid-cols-[11fr,1fr] h-4">

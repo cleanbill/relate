@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ComponentType, Field, FieldType } from "../app/page";
 
 import {
     DndContext,
@@ -18,6 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 
 import SortableItem from "./sortableItem";
+import { Field, FieldComponentType, FieldType } from "../app/model";
 
 export type Props = {
     onChange: Function;
@@ -35,7 +35,7 @@ const ExtendableTextList = (props: Props) => {
     const add = () => {
         console.log('Adding field number ' + props.defaultFields.length);
         setfocusId('input-' + props.defaultFields.length);
-        const newField: Field = { id: props.defaultFields.length, fieldName: '', fieldType: FieldType.text, componentType: ComponentType.NONE, value: '' };
+        const newField: Field = { id: props.defaultFields.length, fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' };
         props.setFields([...props.defaultFields, newField]);
     }
 

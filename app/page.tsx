@@ -1,82 +1,17 @@
 "use client";
 
-import type { NextPage } from 'next'
 import React, { useEffect, useState } from 'react';
 import Define from '../components/define';
 import Groups from '../components/groups';
 import FieldForm from '../components/fieldForm';
 import { establish } from '../utils/stateHelper';
-import SpinWheel from '../components/spinner';
-import { groups } from 'd3';
-
-export enum ComponentType {
-    NONE = "N/A",
-    HAPPY = 'HAPPY',
-    ETL = 'EXTENDABLE TEXT LIST'
-}
-
-export enum FieldType {
-    "text" = "text",
-    "checkbox" = "checkbox",
-    "color" = "color",
-    "email" = "email",
-    "image" = "image",
-    "month" = "month",
-    "number" = "number",
-    "range" = "range",
-    "tel" = "tel",
-    "time" = "time",
-    "url" = "url",
-    "week" = "week",
-    "date" = "date",
-    "happy" = "happy",
-    "list" = "list"
-}
-const fieldTypesArray = ():Array<String> =>{
-    const result = new Array<String>();
-    for (let fieldType in FieldType) {
-        const add = isNaN(parseInt(fieldType));
-        if (add){
-            result.push(fieldType);
-        }
-    }
-    return result;
-}
-export {fieldTypesArray};
-
-export type Field = {
-    id: number;
-    componentType: ComponentType;
-    fieldName: string;
-    fieldType: FieldType;
-    value: string;
-    list?: Array<Field>;
-}
-
-export type Session = {
-    group: string,
-    title: string,
-    mark: string,
-    fields: Array<Field>
-}
-
-export type GroupData = {
-    groupName: string,
-    titles: Record<string, TitleData>
-    display: boolean
-}
-
-export type TitleData = {
-    titleName: string,
-    singleton: boolean,
-    sessions: Record<string, Session>
-}
+import { TitleData, Field, FieldComponentType, FieldType, GroupData, Session } from './model';
 
 const createDayTitleData = (day: string): TitleData => {
     const titleName = day;
     const fields = new Array<Field>();
     const ETLField = {
-        componentType: ComponentType.ETL,
+        fieldComponentType: FieldComponentType.ETL,
         fieldName: day,
         fieldType: FieldType.list,
         value: "",
@@ -101,14 +36,14 @@ const createTodoGroup = (): GroupData => {
     return groupData;
 }
 
-const Home: NextPage = () => {
+const Home = () => {
     const [groupDataList, setGroupDataList] = useState([] as Array<GroupData>);
     const [group, setGroup] = useState("");
     const [title, setTitle] = useState("");
     const [fields, setFields] = useState([] as Array<Field>);
     const [mark, setMark] = useState('Unsaved');
 
-    const isSingleton = (fds: Field[]) => fds[0]?.componentType == ComponentType.ETL;
+    const isSingleton = (fds: Field[]) => fds[0]?.fieldComponentType == FieldComponentType.ETL;
 
     useEffect(() => {
         const startingData = establish<Array<GroupData>>("groups", groupDataList, setGroupDataList);
@@ -128,22 +63,22 @@ const Home: NextPage = () => {
         updateFields(startSession.fields);
     }, []);
 
-    const getComponentType = (fieldType:FieldType):ComponentType =>{
+    const getComponentType = (fieldType:FieldType):FieldComponentType =>{
         if (fieldType == FieldType.happy){
-            return ComponentType.HAPPY;
+            return FieldComponentType.HAPPY;
         }
         if (fieldType == FieldType.list){
-            return ComponentType.ETL;
+            return FieldComponentType.ETL;
         }
 
-        return ComponentType.NONE;
+        return FieldComponentType.NONE;
     }
 
     const updateFields = (fields:Array<Field>) => 
         setFields(fields.map(field => fillInComponentType(field)));  
 
     const fillInComponentType = (field:Field):Field => {
-        field.componentType = getComponentType(field.fieldType);
+        field.fieldComponentType = getComponentType(field.fieldType);
         return field;
     }
 
@@ -153,7 +88,7 @@ const Home: NextPage = () => {
         const fieldTypeElement = document.getElementById('fieldType-' + index) as HTMLInputElement;
         const fieldType = fieldTypeElement.value as FieldType;
         const componentType = getComponentType(fieldType);
-        const updatedList = fields.map((field, i) => (i == index) ? { fieldName, fieldType, componentType, value: '' } as Field : field);
+        const updatedList = fields.map((field, i) => (i == index) ? { fieldName, fieldType, fieldComponentType: componentType, value: '' } as Field : field);
         updateFields([...updatedList]);
     }
 
@@ -175,7 +110,7 @@ const Home: NextPage = () => {
     }
 
     const add = () => {
-        updateFields([...fields, { id: fields.length, fieldName: '', fieldType: FieldType.text, componentType: ComponentType.NONE, value: '' }])
+        updateFields([...fields, { id: fields.length, fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' }])
     }
 
     const overrideFields = (fields: Array<Field>, mark: string) => {

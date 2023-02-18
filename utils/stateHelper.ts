@@ -1,4 +1,4 @@
-import { GroupData, TitleData } from "../app/page";
+import { GroupData, TitleData } from "../app/model";
 
 const json = (text: string): any => {
   try {

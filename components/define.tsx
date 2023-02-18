@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Field, fieldTypesArray } from "../app/page";
+import { Field, fieldTypesArray } from "../app/model";
 
 interface DefineProps {
     fields: Array<Field>, group: string, title: string,

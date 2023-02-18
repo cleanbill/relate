@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { GroupData, TitleData } from "../app/page";
+import { GroupData, TitleData } from "../app/model";
 import History from '../components/history';
 
 interface GroupsState { groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null };

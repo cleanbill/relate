@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ComponentType, Field } from "../app/page";
+import { Field, FieldComponentType } from "../app/model";
 import { showDate } from "../utils/renderHelper";
 import ExtendableTextList from "./extendableTextList";
 import Happy from "./happy";
@@ -27,7 +27,7 @@ const FieldForm = (props:FieldFormProps) => {
     }
 
     const clearData = (field:Field, index: number) =>{
-        if (field.componentType = ComponentType.ETL){
+        if (field.fieldComponentType = FieldComponentType.ETL){
             clearETL(field);
             return;
         } 
@@ -62,7 +62,7 @@ const FieldForm = (props:FieldFormProps) => {
                         {state.fields.map((field, index: number) => (
                             <div key={index} className="mb-6">
                                 <label title={field.value} className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">{field.fieldName} </label>
-                                {field.componentType == ComponentType.NONE &&
+                                {field.fieldComponentType == FieldComponentType.NONE &&
                                     <input onChange={e => props.updateFieldData(index, e.target)}
                                         id={"fieldData-" + index}
                                         defaultValue={field.value}
@@ -70,12 +70,12 @@ const FieldForm = (props:FieldFormProps) => {
                                         checked={field.value == 'true'}
                                         className="b)g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                 }
-                                {field.componentType == ComponentType.HAPPY &&
+                                {field.fieldComponentType == FieldComponentType.HAPPY &&
                                     <Happy id={"fieldData-" + index} onChange={(value: string) => props.updateFieldData(index, value)}
                                         defaultValue={field.value}
                                     ></Happy>
                                 }
-                                {field.componentType == ComponentType.ETL &&
+                                {field.fieldComponentType == FieldComponentType.ETL &&
                                     <ExtendableTextList next={(field:Field) => moveToNext(field)} 
                                         onChange={(value: string) => props.updateFieldData(index, value)}
                                         defaultFields={field.list || []} setFields={(fields:Array<Field>) => 
