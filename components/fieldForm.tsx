@@ -50,6 +50,29 @@ const FieldForm = (props:FieldFormProps) => {
         props.next(field);
     }
 
+    const indent = (fieldIndex:number, listNo: number, tabs:number) =>{
+        const field = state.fields[fieldIndex];
+        const list = field.list;
+        if (!list){
+            return;
+        }
+        const updatedList = list.map((f:Field, i:number)  => {
+            if (listNo != i){
+                return f;
+            }
+            f.indent = isNaN(f.indent)? tabs: f.indent + tabs;
+            return f;
+        })
+        field.list = updatedList;
+        const fields = state.fields.map((f:Field,i:number) => {
+            if (i == fieldIndex){
+                return field;
+            }
+            return f;
+        });
+        setState(old => ({ title: old.title, fields: [... fields], mark: old.mark }));
+    }
+
     useEffect(() =>{
         setState(() => ({ title: props.title, fields: [... props.fields], mark: props.mark }));
     }, [props])
@@ -76,7 +99,7 @@ const FieldForm = (props:FieldFormProps) => {
                                     ></Happy>
                                 }
                                 {field.fieldComponentType == FieldComponentType.ETL &&
-                                    <ExtendableTextList next={(field:Field) => moveToNext(field)} 
+                                    <ExtendableTextList indent={(listNo:number, i:number)=> indent(index,listNo, i)} next={(field:Field) => moveToNext(field)} 
                                         onChange={(value: string) => props.updateFieldData(index, value)}
                                         defaultFields={field.list || []} setFields={(fields:Array<Field>) => 
                                             props.updateFieldData(index, null, fields)}

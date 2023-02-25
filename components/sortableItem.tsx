@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
-const SortableItem = (props: { id: any, value: string, handle: boolean, manana: Function, onReturn: Function, onChange: Function, delete: Function }) => {
+
+type Props = {
+  id: any,
+  value: string,
+  indent: number,
+  handle: boolean,
+  manana: Function,
+  onReturn: Function,
+  onChange: Function,
+  onIndent: Function,
+  delete: Function
+}
+
+const SortableItem = (props: Props) => {
   const {
     attributes,
     listeners,
@@ -35,22 +48,44 @@ const SortableItem = (props: { id: any, value: string, handle: boolean, manana: 
     element.value = props.value;
   }
 
-  const manana = () =>{
-    console.log('tomorrow tomorrow '+props.value);
+  const manana = () => {
+    console.log('tomorrow tomorrow ' + props.value);
     props.manana(props.id);
   }
 
+  const indent = () => {
+     props.onIndent(1); 
+  }
+
+  const undent = () => {
+    props.onIndent(-1); 
+  }
+
+  const indents = [];
+  for(let i = 0;i < props.indent;i++){
+    indents.push('\t');
+  }
+
+  const showIndent = isNaN(props.indent) || props.indent < 4;
+
   return (
-    <div className="grid grid-cols-[0fr,1fr,9fr,1fr]">
-        <button onClick={() => manana()} className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">T</button>
+    <div className="grid grid-cols-[0fr,3fr,10fr,0fr]">
       <div ref={setNodeRef} className={"w-6/12 m-10 border-2 outline outline-blue" + isDragging ? 'z-50 opacity-30' : 'opacity-100'} >
         <button className="h-21 self-center" {...listeners} {...attributes}>
           <svg viewBox="0 0 20 20" width="30"><path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"></path></svg>
         </button>
       </div>
-      <input ref={shact} name={field} title={'field ' + props.id} id={'input-' + props.id} className='w-full h-7' onKeyUp={keyup}
+      <div>
+        <button onClick={() => manana()} className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">T</button>
+        {showIndent && <button onClick={() => indent()} className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">+</button>}
+        {props.indent > 0 && <button onClick={() => undent()} className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">-</button>}
+      </div>
+      <span>
+      {indents.map(t => <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)}
+      <input ref={shact} name={field} title={'field ' + props.id} id={'input-' + props.id} className='w-96 h-7' onKeyUp={keyup}
         onChange={e => props?.onChange(props.id, e.target.value)}
         type='text' ></input>
+        </span>
       <button onClick={e => props.delete(props.id)} className="ml-3 justify-self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">X</button>
     </div>
   );

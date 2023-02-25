@@ -6,9 +6,9 @@ import { showDate } from "../utils/renderHelper";
 interface HistoryState { titleData: TitleData, keys: Array<string>, selected: string };
 interface HistoryProps { titleData: TitleData, overrideFields: Function, updateTitleData: Function };
 
-const History = (props:HistoryProps) =>{
+const History = (props: HistoryProps) => {
 
-    useEffect(() =>{
+    useEffect(() => {
         resetState(props);
     }, [props])
 
@@ -18,9 +18,9 @@ const History = (props:HistoryProps) =>{
         selected: '',
     } as HistoryState);
 
-   const resetState = (props: HistoryProps) => {
+    const resetState = (props: HistoryProps) => {
         const sessions = props.titleData.sessions;
-        if (!sessions ) {
+        if (!sessions) {
             return;
         }
         const keys = Object.keys(sessions) as Array<string>;
@@ -31,7 +31,7 @@ const History = (props:HistoryProps) =>{
         const selected = (key == state.selected) ? "" : key;
         setState((pre: HistoryState) => ({ titleData: pre.titleData, keys: pre.keys, selected }));
         const fieldDefs = state.titleData.sessions[key].fields;
-        props.overrideFields(fieldDefs,  key);
+        props.overrideFields(fieldDefs, key);
     }
 
     const del = (key: string) => {
@@ -40,20 +40,33 @@ const History = (props:HistoryProps) =>{
         props.updateTitleData(key);
     }
 
+
+    const getIndents = (field: Field) => {
+        const indents = [];
+        for (let i = 0; i < field.indent; i++) {
+            indents.push('\t');
+        }
+        return indents;
+    }
+
+
     return (
         <div >
-            {props.titleData.singleton 
-                && props.titleData.sessions['single'].fields[0].list 
-                && props.titleData.sessions['single'].fields[0].list.map((field: Field, index:number) => (
-                <div className="w-100 mt-4" key={index}>
+            {props.titleData.singleton
+                && props.titleData.sessions['single'].fields[0].list
+                && props.titleData.sessions['single'].fields[0].list.map((field: Field, index: number) => (
+                    <div className="w-100 mt-4 text-left" key={index}>
 
-                    <div className="grid grid-cols-[11fr,1fr] h-4">
-                        <button onClick={() => show('single')} className="whitespace-nowrap h-10"> {field.value}</button>
-                        <button onClick={() => del('single')} className="butt mb-10 w-6 h-5 bg-red-400">X</button>
+                        <div className="grid grid-cols-[11fr,1fr] h-4">
+                            <span>
+                                {getIndents(field).map(t => <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)}
+                                <button onClick={() => show('single')} className="whitespace-nowrap text-left h-10"> {field.value}</button>
+                            </span>
+                            <button onClick={() => del('single')} className="butt mb-10 w-6 h-5 bg-red-400">X</button>
+                        </div>
                     </div>
-                </div>
-            ))}
-            {!props.titleData.singleton && state?.keys &&  state.keys.map((key: string) => (
+                ))}
+            {!props.titleData.singleton && state?.keys && state.keys.map((key: string) => (
                 <div className="w-100 mt-4" key={key}>
 
                     <div className="grid grid-cols-[11fr,1fr] h-4">

@@ -20,6 +20,7 @@ import SortableItem from "./sortableItem";
 import { Field, FieldComponentType, FieldType } from "../app/model";
 
 export type Props = {
+    indent: Function;
     onChange: Function;
     defaultFields: Array<Field>;
     setFields: Function;
@@ -35,7 +36,7 @@ const ExtendableTextList = (props: Props) => {
     const add = () => {
         console.log('Adding field number ' + props.defaultFields.length);
         setfocusId('input-' + props.defaultFields.length);
-        const newField: Field = { id: props.defaultFields.length, fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' };
+        const newField: Field = { id: props.defaultFields.length, fieldName: '', fieldType: FieldType.text, indent: 0, fieldComponentType: FieldComponentType.NONE, value: '' };
         props.setFields([...props.defaultFields, newField]);
     }
 
@@ -94,6 +95,10 @@ const ExtendableTextList = (props: Props) => {
         props.next(move);
     }
 
+    const indent = (id: number,tabs: number) =>{
+        props.indent(id, tabs);
+    }
+
     return (
         <>
             <DndContext
@@ -105,7 +110,7 @@ const ExtendableTextList = (props: Props) => {
                 <SortableContext items={props.defaultFields} strategy={rectSortingStrategy}>
                     {props.defaultFields.map((field: Field, index: number) => (
                         <div key={index}>
-                            <SortableItem key={index} id={index} handle={true} value={field.value} onReturn={() => add()}
+                            <SortableItem onIndent={(i:number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
                                 onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
                             />
                         </div>))}

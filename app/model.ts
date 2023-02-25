@@ -40,6 +40,7 @@ export type Field = {
     fieldType: FieldType;
     value: string;
     list?: Array<Field>;
+    indent: number;
 }
 
 export type Session = {
