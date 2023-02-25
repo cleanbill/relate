@@ -110,7 +110,7 @@ const Home = () => {
     }
 
     const add = () => {
-        updateFields([...fields, { id: fields.length, fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' }])
+        updateFields([...fields, { id: fields.length, indent:0 ,fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' }])
     }
 
     const overrideFields = (fields: Array<Field>, mark: string) => {
