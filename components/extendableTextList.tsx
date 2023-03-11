@@ -32,12 +32,14 @@ const grid = 8;
 const ExtendableTextList = (props: Props) => {
     const [activeId, setActiveId] = useState(null);
     const [focusId, setfocusId] = useState(null as string | null);
+    const [fields, setFields] = useState([] as Array<Field>);
 
     const add = () => {
-        console.log('Adding field number ' + props.defaultFields.length);
-        setfocusId('input-' + props.defaultFields.length);
-        const newField: Field = { id: props.defaultFields.length, fieldName: '', fieldType: FieldType.text, indent: 0, fieldComponentType: FieldComponentType.NONE, value: '' };
-        props.setFields([...props.defaultFields, newField]);
+        console.log('Adding field number ' + fields.length);
+        setfocusId('input-' + fields.length);
+        const newField: Field = { id: fields.length, fieldName: '', fieldType: FieldType.text, indent: 0, fieldComponentType: FieldComponentType.NONE, value: '' };
+        props.setFields([...fields, newField]);
+        setFields([...fields, newField]);
     }
 
     useEffect(() => {
@@ -46,6 +48,7 @@ const ExtendableTextList = (props: Props) => {
             el.focus();
             el.value = props.defaultFields[props.defaultFields.length - 1].value;
         }
+        setFields([... props.defaultFields])
     }, [focusId, props.defaultFields])
 
     const sensors = useSensors(
@@ -81,22 +84,85 @@ const ExtendableTextList = (props: Props) => {
     const deleteField = (index: number) => {
         console.log('deleting ' + index);
         props.setFields([
-            ...props.defaultFields.slice(0, index),
-            ...props.defaultFields.slice(index + 1, props.defaultFields.length)
+            ...fields.slice(0, index),
+            ...fields.slice(index + 1, fields.length)
         ]);
+        setFields([
+            ...fields.slice(0, index),
+            ...fields.slice(index + 1, fields.length)           
+        ])
+    }
+
+    const nextIndentend = (index: number) => {
+        if (props.defaultFields.length == index + 1) {
+            return false;
+        }
+        const nextField = props.defaultFields[index + 1];
+        if (isNaN(nextField.indent)) {
+            return false;
+        }
+        if (nextField.indent == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    const lastIndexIndented = (index: number): number => {
+        let checker = index;
+        while (nextIndentend(checker)) {
+            checker = checker + 1;
+        }
+        return checker;
+    }
+
+    const moveIndent = (from: number, to: number):Array<Field> => {
+        let updatedFields = fields;
+        for (let index = to; index >= from; index--) {
+            updatedFields = [... moveIt(index, updatedFields)];
+        }
+        return updatedFields;
+    }
+
+    const moveIt = (index: number, currentFields: Array<Field>): Array<Field> => {
+        const move = props.defaultFields[index];
+        const updatedFields = [
+            ...currentFields.slice(0, index),
+            ...currentFields.slice(index + 1, fields.length)
+        ];
+        props.setFields([... updatedFields]);
+        props.next(move);
+        return updatedFields;
     }
 
     const tomorrow = (index: number) => {
-        const move =  props.defaultFields[index];
-        props.setFields([
-            ...props.defaultFields.slice(0, index),
-            ...props.defaultFields.slice(index + 1, props.defaultFields.length)
-        ]);
-        props.next(move);
+        const lastIndex = lastIndexIndented(index);
+        const newFields = (lastIndex == index)? moveIt(index, fields):moveIndent(index, lastIndex);
+        setFields([... newFields]);
     }
 
-    const indent = (id: number,tabs: number) =>{
+    const indent = (id: number, tabs: number) => {
         props.indent(id, tabs);
+    }
+
+    const iColours = new Map([
+        [1,'bg-blue-100'],
+        [2,'bg-red-100'],
+        [3,'bg-yellow-100'],
+        [4,'bg-blue-200']
+    ]);
+
+    const indentColour = (field: Field): string => {
+        if (field.id == 0) {
+            return "";
+        }
+        if (isNaN(field.indent)) {
+            return "";
+        }
+        if (field.indent == 0) {
+            return "";
+        }
+
+        return iColours.get(field.indent) || '';
     }
 
     return (
@@ -107,17 +173,17 @@ const ExtendableTextList = (props: Props) => {
                 onDragEnd={handleDragEnd}
                 onDragStart={handleDragStart}
             >
-                <SortableContext items={props.defaultFields} strategy={rectSortingStrategy}>
-                    {props.defaultFields.map((field: Field, index: number) => (
-                        <div key={index}>
-                            <SortableItem onIndent={(i:number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
+                <SortableContext items={fields} strategy={rectSortingStrategy}>
+                    {fields.map((field: Field, index: number) => (
+                        <div className={indentColour(field)} key={index}>
+                            <SortableItem onIndent={(i: number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
                                 onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
                             />
                         </div>))}
                     <DragOverlay>
                         {activeId ? (
                             <div className="w-10/12 bg-green-100 border-2 outline outline-blue h-10">
-                                {props.defaultFields[activeId].value}
+                                {fields[activeId].value}
                             </div>
                         ) : null}
                     </DragOverlay>
