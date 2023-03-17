@@ -273,11 +273,11 @@ const Home = () => {
     }
 
     return (
-        <div className="bg-blue-200">
-            <div className="bg-blue-200 grid grid-cols-3 w-100 gap-10 h-full">
+        <div className="lg:bg-blue-200">
+            <div className="lg:bg-blue-200 grid sg:grid-cols-1 lg:grid-cols-3 w-100 gap-10 h-full">
 
-                <div>
-                    <a href="#" className="block mt-2 ml-3 p-6 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <div className='sg:col-span-2'>
+                    <a href="#" className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <Groups selectedGroup={group} selectedTitle={title} groups={groupDataList} select={selectData}
                             overrideFields={overrideFields}
                             updateTitleData={updateTitleData}
@@ -288,7 +288,7 @@ const Home = () => {
                 {/* <SpinWheel></SpinWheel> */}
 
                 <div className='col-span-2'>
-                    <a href="#" className="block mt-2 p-6 mr-3 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <a href="#" className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
                         <FieldForm
                             next={(field:Field)  => next(field)}
                             title={title}
@@ -301,13 +301,13 @@ const Home = () => {
 
                 </div>
             </div>
-            <div className="bg-blue-200 grid grid-cols-2 w-100 gap-10 h-full">
+            <div className="lg:bg-blue-200 grid grid-cols-2 w-100 gap-10 h-full">
 
-                <button onClick={importData} className="butt justify-self-start ml-3">Import</button>
+                <button onClick={importData} className="butt sg:mb-4 justify-self-start ml-3">Import</button>
                 <input type="file" hidden
                     id="export" name="export"
                     accept="application/json" onChange={importData} />
-                <button onClick={exportData} className="butt justify-self-end">Export</button>
+                <button onClick={exportData} className="butt sg:mb-4 justify-self-end">Export</button>
             </div>
             <a href="#" className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <Define

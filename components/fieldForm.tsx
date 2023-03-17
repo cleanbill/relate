@@ -61,6 +61,7 @@ const FieldForm = (props:FieldFormProps) => {
                 return f;
             }
             f.indent = isNaN(f.indent)? tabs: f.indent + tabs;
+            f.id = i;
             return f;
         })
         field.list = updatedList;
@@ -91,7 +92,7 @@ const FieldForm = (props:FieldFormProps) => {
                                         defaultValue={field.value}
                                         type={field.fieldType}
                                         checked={field.value == 'true'}
-                                        className="b)g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                        className="b)g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block lg:w-full sg:w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                 }
                                 {field.fieldComponentType == FieldComponentType.HAPPY &&
                                     <Happy id={"fieldData-" + index} onChange={(value: string) => props.updateFieldData(index, value)}
@@ -108,10 +109,10 @@ const FieldForm = (props:FieldFormProps) => {
                             </div>
                         ))}
                     </div>
-                    <div className="grid grid-cols-3">
-                        <button type="submit" onClick={e => clearAllData()} className="butt justify-self-start">Reset</button>
+                    <div className="grid grid-cols-3 sg:mb-2">
+                        <button type="submit" onClick={e => clearAllData()} className="butt justify-self-start sg:mb-2">Reset</button>
                         <div></div>
-                        <button type="submit" onClick={e => props.saveData()} className="butt justify-self-end">Save</button>
+                        <button type="submit" onClick={e => props.saveData()} className="butt justify-self-end sg:mb-2">Save</button>
                     </div>
                 </>)}
         </>

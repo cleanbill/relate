@@ -77,6 +77,7 @@ const ExtendableTextList = (props: Props) => {
 
     const fieldChange = (index: number, value: string) => {
         const field = props.defaultFields[index]
+        field.id = index;
         field.value = value;
         props.defaultFields[index] = field;
     }
@@ -137,7 +138,8 @@ const ExtendableTextList = (props: Props) => {
     const tomorrow = (index: number) => {
         const lastIndex = lastIndexIndented(index);
         const newFields = (lastIndex == index)? moveIt(index, fields):moveIndent(index, lastIndex);
-        setFields([... newFields]);
+        const reindexed = newFields.map((f:Field, id:number)=> {f.id = id; return f} );
+        setFields([... reindexed]);
     }
 
     const indent = (id: number, tabs: number) => {
@@ -175,7 +177,7 @@ const ExtendableTextList = (props: Props) => {
             >
                 <SortableContext items={fields} strategy={rectSortingStrategy}>
                     {fields.map((field: Field, index: number) => (
-                        <div className={indentColour(field)} key={index}>
+                        <div className={indentColour(field)} key={field.fieldName}>
                             <SortableItem onIndent={(i: number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
                                 onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
                             />

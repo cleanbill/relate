@@ -1,8 +1,9 @@
 import './global.css';
-import { Inter } from '@next/font/google'
+import { Comic_Neue } from '@next/font/google'
 
- const inter = Inter({
-     subsets: ['latin']
+ const font = Comic_Neue({
+   subsets: ['latin'],
+   weight: '300'
  })
 
 export default function RootLayout({ children }: {
@@ -15,7 +16,7 @@ export default function RootLayout({ children }: {
         <meta name="description" content="Relatable data" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={inter.className} >{children}</body>
+      <body className={font.className} >{children}</body>
     </html>
   );
 }

@@ -75,7 +75,7 @@ const SortableItem = (props: Props) => {
           <svg viewBox="0 0 20 20" width="30"><path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"></path></svg>
         </button>
       </div>
-      <div className="grid grid-cols-[1fr,1fr,1fr] w-20">
+      <div className="grid grid-cols-[1fr,1fr,1fr] w-20 ">
         {!showManana && <div className="w-9"></div>}
         {showManana && <button onClick={() => manana()} title='Do it tomorrow' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">T</button>}
         {showIndent && <button onClick={() => indent()} title='indent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">+</button>}
@@ -84,11 +84,11 @@ const SortableItem = (props: Props) => {
       </div>
       <span>
       {indents.map(t => <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)}
-      <input ref={shact} name={field} title={'field ' + props.id} id={'input-' + props.id} className='w-96 h-7' onKeyUp={keyup}
+      <input ref={shact} name={field} title={'field ' + props.id} id={'input-' + props.id} className='lg:w-96 sg:w-40 h-7' onKeyUp={keyup}
         onChange={e => props?.onChange(props.id, e.target.value)}
         type='text' ></input>
         </span>
-      <button onClick={e => props.delete(props.id)} className="ml-3 justify-self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">X</button>
+      <button onClick={e => props.delete(props.id)} className="ml-3 justify-self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 sg:mr-1.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">X</button>
     </div>
   );
 };
