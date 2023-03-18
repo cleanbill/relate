@@ -19,13 +19,18 @@ import {
 import SortableItem from "./sortableItem";
 import { Field, FieldComponentType, FieldType } from "../app/model";
 
-export type Props = {
+type Props = {
     indent: Function;
     onChange: Function;
     defaultFields: Array<Field>;
     setFields: Function;
     next: Function;
 }
+
+export type ArchivedFile ={
+    field: Field;
+    archivedOn: Date
+} 
 
 const grid = 8;
 
@@ -84,6 +89,14 @@ const ExtendableTextList = (props: Props) => {
 
     const deleteField = (index: number) => {
         console.log('deleting ' + index);
+        const archivedField = fields[index];
+        if (archivedField.value) {
+            const storedArchivedFields = localStorage.getItem('archive');
+            const archivedFields = storedArchivedFields? JSON.parse(storedArchivedFields): [];
+            archivedFields.push({date: new Date(),field:archivedField});
+            localStorage.setItem('archive',JSON.stringify(archivedFields));    
+        }
+
         props.setFields([
             ...fields.slice(0, index),
             ...fields.slice(index + 1, fields.length)
@@ -177,7 +190,7 @@ const ExtendableTextList = (props: Props) => {
             >
                 <SortableContext items={fields} strategy={rectSortingStrategy}>
                     {fields.map((field: Field, index: number) => (
-                        <div className={indentColour(field)} key={field.fieldName}>
+                        <div className={indentColour(field)} key={index}>
                             <SortableItem onIndent={(i: number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
                                 onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
                             />
