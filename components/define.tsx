@@ -13,16 +13,24 @@ interface DefineProps {
 
 const Define = (props: DefineProps) => {
 
-    const shact = (element: HTMLInputElement, val:string) => {
+    useEffect(() => {
+            const lastFieldID = "fieldName-" + (props.fields.length - 1);
+            const lastField = document.getElementById(lastFieldID);
+            lastField?.focus();
+//            lastField?.scrollIntoView();
+    }, [props.fields.length]);
+
+
+    const shact = (element: HTMLInputElement, val: string) => {
         if (!element) {
-          return;
+            return;
         }
         element.value = val;
-      }
-    
-     const change = (fn:Function, e:ChangeEvent<HTMLInputElement>) => {
+    }
+
+    const change = (fn: Function, e: ChangeEvent<HTMLInputElement>) => {
         fn(e.target.value);
-     }
+    }
 
     return (
         <>
@@ -30,11 +38,11 @@ const Define = (props: DefineProps) => {
                 <form >
                     <div className="mb-6">
                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Group</label>
-                        <input ref={(e:HTMLInputElement) => shact(e, props.group)} defaultValue={props.group} onChange={e => change(props.setGroup,e)} type="text" id="group" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                        <input ref={(e: HTMLInputElement) => shact(e, props.group)} defaultValue={props.group} onChange={e => change(props.setGroup, e)} type="text" id="group" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                     </div>
                     <div className="mb-6">
                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Title</label>
-                        <input ref={(e:HTMLInputElement) => shact(e, props.title)} onChange={e => change(props.setTitle,e)} defaultValue={props.title} type="text" id="group" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                        <input ref={(e: HTMLInputElement) => shact(e, props.title)} onChange={e => change(props.setTitle, e)} defaultValue={props.title} type="text" id="group" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                     </div>
                     <div className='grid grid-cols-3 gap-10'>
 
@@ -46,12 +54,12 @@ const Define = (props: DefineProps) => {
                     {props.fields.map((field, index: number) => (
                         <div key={index} className='grid grid-cols-3 gap-10'>
                             <div className="w-full ">
-                                <input ref={(e:HTMLInputElement) => shact(e, field.fieldName)} onChange={e => props.updateField(index)} 
-                                defaultValue={field.fieldName} type="text" id={"fieldName-" + index} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                <input ref={(e: HTMLInputElement) => shact(e, field.fieldName)} onChange={e => props.updateField(index)}
+                                    defaultValue={field.fieldName} type="text" id={"fieldName-" + index} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             </div>
                             <div className="mb-6">
-                                <select value={field.fieldType} onChange={e => props.updateField(index)} id={"fieldType-" + index} 
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <select value={field.fieldType} onChange={e => props.updateField(index)} id={"fieldType-" + index}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     {fieldTypesArray().map(fieldType =>
                                         <option key={fieldType + ''} value={fieldType + ''}>{fieldType}</option>
                                     )}
@@ -66,9 +74,9 @@ const Define = (props: DefineProps) => {
                     ))}
                 </form>
                 <div className='float-right' style={{ float: 'right' }}>
-                    <button type="button" onClick={() => props.add()} className="butt-colour focus:ring-4  font-medium float-right rounded-lg text-sm w-8 p-1 focus:outline-none "> 
+                    <button type="button" onClick={() => props.add()} className="butt-colour focus:ring-4  font-medium float-right rounded-lg text-sm w-8 p-1 focus:outline-none ">
                         <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-                        <span className="sr-only">Add new field</span>
+                        <span className="sr-only">Icon description</span>
                     </button>
 
                 </div>
