@@ -277,7 +277,7 @@ const Home = () => {
             <div className="lg:bg-blue-200 grid sg:grid-cols-1 lg:grid-cols-3 w-100 gap-10 h-full">
 
                 <div className='sg:col-span-2'>
-                    <a href="#" className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <a className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <Groups selectedGroup={group} selectedTitle={title} groups={groupDataList} select={selectData}
                             overrideFields={overrideFields}
                             updateTitleData={updateTitleData}
@@ -288,7 +288,7 @@ const Home = () => {
                 {/* <SpinWheel></SpinWheel> */}
 
                 <div className='col-span-2'>
-                    <a href="#" className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
+                    <a className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
                         <FieldForm
                             next={(field:Field)  => next(field)}
                             title={title}
@@ -309,7 +309,7 @@ const Home = () => {
                     accept="application/json" onChange={importData} />
                 <button onClick={exportData} className="butt sg:mb-4 justify-self-end">Export</button>
             </div>
-            <a href="#" className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <a className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <Define
                     fields={fields} group={group} title={title}
                     setGroup={setGroup}
@@ -321,7 +321,7 @@ const Home = () => {
             </a>
 
             <footer className="pt-4 w-full  bg-white max-w rounded-lg shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 static bottom-0">
-                <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2022 <a href="https://flowbite.com/" className="hover:underline">Relatable™</a>. All Rights Reserved.
+                <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2022 <a href="https://github.com/cleanbill/relate" className="hover:underline">Relatable™</a>. All Rights Reserved.
                 </span>
                 <ul className="flex flex-wrap items-center mt-3 text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
                     <li>
