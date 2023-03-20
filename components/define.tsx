@@ -13,17 +13,6 @@ interface DefineProps {
 
 const Define = (props: DefineProps) => {
 
-    // const newGroup = () => {
-
-    // }
-    useEffect(() =>{
-        const lastFieldID = "fieldName-"+(props.fields.length-1);
-        const lastField = document.getElementById(lastFieldID);
-        lastField?.focus();
-        lastField?.scrollIntoView();
-    },[props]);
-
-
     const shact = (element: HTMLInputElement, val:string) => {
         if (!element) {
           return;
@@ -37,10 +26,6 @@ const Define = (props: DefineProps) => {
 
     return (
         <>
-            {/* <div className="grid grid-cols-2">
-                <h5 className="mb-2 pt-4 pl-10 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Define</h5>
-                <button onClick={() => newGroup()} className="butt justify-self-end">NEW</button>
-            </div> */}
             <div className="font-normal p-12 text-gray-700 dark:text-gray-400">
                 <form >
                     <div className="mb-6">
