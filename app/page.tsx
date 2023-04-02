@@ -19,7 +19,7 @@ const createDayTitleData = (day: string): TitleData => {
     } as Field;
     fields.push(ETLField);
     const session = { group: 'todo', title: day, mark: day, fields }
-    return { titleName, singleton: true, sessions: { 'single' : session } }
+    return { titleName, singleton: true, sessions: { 'single': session } }
 }
 
 const createTodoGroup = (): GroupData => {
@@ -63,21 +63,21 @@ const Home = () => {
         updateFields(startSession.fields);
     }, []);
 
-    const getComponentType = (fieldType:FieldType):FieldComponentType =>{
-        if (fieldType == FieldType.happy){
+    const getComponentType = (fieldType: FieldType): FieldComponentType => {
+        if (fieldType == FieldType.happy) {
             return FieldComponentType.HAPPY;
         }
-        if (fieldType == FieldType.list){
+        if (fieldType == FieldType.list) {
             return FieldComponentType.ETL;
         }
 
         return FieldComponentType.NONE;
     }
 
-    const updateFields = (fields:Array<Field>) => 
-        setFields(fields.map(field => fillInComponentType(field)));  
+    const updateFields = (fields: Array<Field>) =>
+        setFields(fields.map(field => fillInComponentType(field)));
 
-    const fillInComponentType = (field:Field):Field => {
+    const fillInComponentType = (field: Field): Field => {
         field.fieldComponentType = getComponentType(field.fieldType);
         return field;
     }
@@ -99,8 +99,8 @@ const Home = () => {
         return target.value;
     }
 
-    const updateFieldData = (index: number, target?: HTMLInputElement, list?:Array<Field> ) => {
-        if (target){
+    const updateFieldData = (index: number, target?: HTMLInputElement, list?: Array<Field>) => {
+        if (target) {
             fields[index].value = getValue(target);
         }
         if (list) {
@@ -110,7 +110,7 @@ const Home = () => {
     }
 
     const add = () => {
-        updateFields([...fields, { id: fields.length, indent:0 ,fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' }])
+        updateFields([...fields, { id: fields.length, indent: 0, fieldName: '', fieldType: FieldType.text, fieldComponentType: FieldComponentType.NONE, value: '' }])
     }
 
     const overrideFields = (fields: Array<Field>, mark: string) => {
@@ -120,6 +120,10 @@ const Home = () => {
 
     const selectData = (gd: GroupData, title: string) => {
         const titleData = gd.titles[title];
+        if (!titleData){
+            setTitle("");
+            return;
+        }
         const sessionKeys = Object.keys(titleData.sessions);
         const startSession = titleData.sessions[sessionKeys[0]]; // get first session... should be in date order
         setGroup(gd.groupName);
@@ -127,7 +131,7 @@ const Home = () => {
         const startFields = startSession.fields.map(field => fillInComponentType(field));
         updateFields(startFields);
         titleData.singleton = isSingleton(startFields);
-        if (titleData.sessions){
+        if (titleData.sessions) {
             setMark('');
         }
     }
@@ -172,6 +176,11 @@ const Home = () => {
         return session;
     }
 
+    const deleteGroup = (index: number) => {
+        const updatedList = groupDataList.filter((gd: GroupData, i: number) => i != index);
+        setGroupDataList([...updatedList]);
+    }
+
     const addToGroup = (gd: GroupData) => {
         const td = gd.titles[title];
         if (!td) {
@@ -181,7 +190,7 @@ const Home = () => {
         setMark(() => getMark());
         const session = td.sessions[mark];
         if (session) {
-            const updatedSession = { group, title, mark, fields};
+            const updatedSession = { group, title, mark, fields };
             td.sessions[updatedSession.mark] = updatedSession;
             return gd;
         }
@@ -201,11 +210,22 @@ const Home = () => {
         commit(newList);
     }
 
+    const deleteTitleData = (mark: string) => {
+        const groupDataInList = groupDataList.find((gd: GroupData) => gd.groupName === group);
+        if (!groupDataInList) {
+            return;
+        }
+        delete groupDataInList.titles[title].sessions[mark]
+        const newList = replaceGroupData(groupDataInList);
+        commit(newList);
+        setTitle("");
+    }
+
     const createTitleData = () => {
         const session = getCurrentSession();
         const sessions: Record<string, Session> = {};
         sessions[session.mark] = session;
-        const singleton = isSingleton(session.fields);    
+        const singleton = isSingleton(session.fields);
         const titleData: TitleData = { titleName: title, sessions, singleton }
         return titleData;
     }
@@ -258,18 +278,27 @@ const Home = () => {
         // console.log(await what.json());
     }
 
-    const next = (field:Field) => {
-        const selectedGroup = groupDataList.find((groupData:GroupData)=>groupData.groupName == group);
-        if (!selectedGroup){
+    const next = (field: Field) => {
+        const selectedGroup = groupDataList.find((groupData: GroupData) => groupData.groupName == group);
+        if (!selectedGroup) {
             return;
         }
         const titleKeys = Object.keys(selectedGroup.titles);
         const titleIndex = titleKeys.indexOf(title);
-        const nextIndex = titleIndex+1 == titleKeys.length? 0: titleIndex+1;
+        const nextIndex = titleIndex + 1 == titleKeys.length ? 0 : titleIndex + 1;
         const titleKey = titleKeys[nextIndex];
         const titleData = selectedGroup.titles[titleKey];
         const session = titleData.sessions['single'];
         session.fields[0].list?.unshift(field);
+    }
+
+    const update = (value: string, setFn: Function) => {
+        if (value) {
+            setFn(value);
+            return;
+        }
+        saveData();
+        setFn("");
     }
 
     return (
@@ -281,6 +310,7 @@ const Home = () => {
                         <Groups selectedGroup={group} selectedTitle={title} groups={groupDataList} select={selectData}
                             overrideFields={overrideFields}
                             updateTitleData={updateTitleData}
+                            deleteGroup={deleteGroup}
                         ></Groups>
                     </a>
                 </div>
@@ -290,10 +320,11 @@ const Home = () => {
                 <div className='col-span-2'>
                     <a className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
                         <FieldForm
-                            next={(field:Field)  => next(field)}
+                            next={(field: Field) => next(field)}
                             title={title}
                             fields={fields}
                             updateFieldData={updateFieldData}
+                            deleteTitleData={deleteTitleData}
                             saveData={saveData}
                             mark={mark}
                         ></FieldForm>
@@ -312,8 +343,8 @@ const Home = () => {
             <a className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <Define
                     fields={fields} group={group} title={title}
-                    setGroup={setGroup}
-                    setTitle={setTitle}
+                    setGroup={(value: string) => update(value, setGroup)}
+                    setTitle={(value: string) => update(value, setTitle)}
                     add={add}
                     take={take}
                     updateField={updateField}></Define>

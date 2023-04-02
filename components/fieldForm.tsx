@@ -8,6 +8,7 @@ interface FieldFormState { title: string, fields: Array<Field>, mark: string };
 interface FieldFormProps {
     title: string, fields: Array<Field>, mark: string,
     updateFieldData: Function,
+    deleteTitleData: Function,
     saveData: Function,
     next: Function
 };
@@ -81,7 +82,8 @@ const FieldForm = (props:FieldFormProps) => {
     return (
         <>
             {!state.title || (
-                <><h5 title='fill in the form' className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{state.title} <span className="text-sm">- {showDate(state.mark)}</span></h5>
+                <><h5 title='fill in the form' className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{state.title} <span className="text-sm">- {showDate(state.mark)} <button onClick={() => {props.deleteTitleData(state.mark)}} className="butt float-right mb-10 w-6 h-5 bg-red-400">X</button></span></h5>
+                    
                     <div className="font-normal text-gray-700 dark:text-gray-400">
                         {state.fields.map((field, index: number) => (
                             <div key={index} className="mb-6">

@@ -6,7 +6,7 @@ import History from '../components/history';
 interface GroupsState { groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null };
 interface GroupsProps {
     groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null
-    , select: Function, overrideFields: Function, updateTitleData: Function
+    , select: Function, overrideFields: Function, updateTitleData: Function, deleteGroup: Function
 };
 
 // change have inbedded history
@@ -18,6 +18,28 @@ const Groups = (props: GroupsProps) => {
     useEffect(() => {
         setState({ groups: props.groups, selectedTitle: props.selectedTitle, selectedGroup: props.selectedGroup });
     }, [props]);
+
+    const deleteGroup = (index: number) =>{
+        const groups = state.groups.filter((g:GroupData,i:number)=> i != index); 
+        setState(old => ({ groups, selectedTitle: old.selectedTitle, selectedGroup: old.selectedGroup }));
+        props.deleteGroup(index);
+    }
+
+    const deleteTitle = (groupNo:number, titleKey: string)=>{
+        let selectedTitle = "";
+        const groups = state.groups.map((g:GroupData,i:number)=> {
+            if (i != groupNo){
+                return g;
+            }
+            const titles = g.titles;
+            delete titles[titleKey]; //  .filter((title:Title, index:number)=> index != titleNo);
+            const keys = Object.keys(titles);
+            selectedTitle = keys.length == 0 ? "" :keys[keys.length-1];
+            props.select(g, selectedTitle);
+            return g;
+        });
+        setState(old => ({ groups, selectedTitle, selectedGroup: old.selectedGroup }));        
+    }
 
     const toggle = (index: number): void => {
         const groups = state.groups.map((grp: GroupData, i: number) => {
@@ -56,9 +78,10 @@ const Groups = (props: GroupsProps) => {
             <h5 className=" mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Groups and Titles</h5>
             <div className="font-normal text-gray-700 dark:text-gray-400">
                 {state.groups.map((gd: GroupData, index: number) => (
-                    <div key={index}>
+                    gd && <div key={index}>
+                        
                         <button onClick={() => toggle(index)} type="button" className="flex items-center justify-between w-full p-5 font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-yellow-600 dark:hover:bg-gray-800 bg-yellow-400 dark:bg-gray-800 text-gray-900 dark:text-white">
-                            <span className={gd.display ? 'text-white': 'text-stone-700'}>{gd.groupName}</span>
+                            <span className={gd.display ? 'text-white w-full': 'text-stone-700 w-full'}>{gd.groupName} <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-10 w-6 h-5 bg-red-400">X</button></span>
                         </button>
                         {gd.display &&
                             Object.keys(gd.titles).map((key: string, i: number) => (
@@ -67,6 +90,8 @@ const Groups = (props: GroupsProps) => {
                                     <div className="mb-2 text-gray-500 dark:text-gray-400">
                                         {gd.titles[key].titleName == state.selectedTitle && (<span></span>)}
                                         <span className={gd.titles[key].titleName == state.selectedTitle? 'font-bold': ""} onClick={() => selectTitle(gd, gd.titles[key].titleName)}>{i + 1} . {gd.titles[key].titleName} </span>
+                                        <button onClick={() => deleteTitle(index, key)} className="z-10 float-right butt mb-10 w-6 h-5 bg-red-400">X</button>
+
                                         { showHistory(gd.titles[key]) && (
                                             <History 
                                             titleData={gd.titles[key]} 

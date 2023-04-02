@@ -71,7 +71,7 @@ const History = (props: HistoryProps) => {
 
                     <div className="grid grid-cols-[11fr,1fr] h-4">
                         <button onClick={() => show(key)} className="whitespace-nowrap h-10">{showDate(key)}</button>
-                        <button onClick={() => del(key)} className="butt mb-10 w-6 h-5 bg-red-400">X</button>
+                        {/* <button onClick={() => del(key)} className="butt mb-10 w-6 h-5 bg-red-400">X</button> */}
                     </div>
                 </div>
             ))}
