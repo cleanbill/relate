@@ -41,7 +41,7 @@ const SortableItem = (props: Props) => {
     props.onReturn();
   }
 
-  const shact = (element: HTMLInputElement) => {
+  const valueRef = (element: HTMLInputElement) => {
     if (!element) {
       return;
     }
@@ -56,7 +56,7 @@ const SortableItem = (props: Props) => {
      props.onIndent(1); 
   }
 
-  const undent = () => {
+  const unindent = () => {
     props.onIndent(-1); 
   }
 
@@ -80,15 +80,15 @@ const SortableItem = (props: Props) => {
         {showManana && <button onClick={() => manana()} title='Do it tomorrow' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">T</button>}
         {showIndent && <button onClick={() => indent()} title='indent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">+</button>}
         {!showIndent && <div className="w-9"></div>}
-        {props.indent > 0 && <button onClick={() => undent()} title='unindent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">-</button>}
+        {props.indent > 0 && <button onClick={() => unindent()} title='unindent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">-</button>}
       </div>
       <span>
       {indents.map((t,i) => <span key={i}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>)}
-      <input ref={shact} name={field} title={'field ' + props.id} id={'input-' + props.id} className='lg:w-96 sg:w-40 h-7' onKeyUp={keyup}
+      <input ref={valueRef} name={field} title={'field ' + props.id} id={'input-' + props.id} className='lg:w-96 sg:w-40 h-7' onKeyUp={keyup}
         onChange={e => props?.onChange(props.id, e.target.value)}
         type='text' ></input>
         </span>
-      <button onClick={e => props.delete(props.id)} className="ml-3 justify-self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 sg:mr-1.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">X</button>
+      <button onClick={e => props.delete(props.id)} className="ml-3 justify-self-end text-white bg-blue-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 sg:mr-1.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">X</button>
     </div>
   );
 };

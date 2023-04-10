@@ -28,10 +28,7 @@ const createTodoGroup = (): GroupData => {
     const wednesday = createDayTitleData('Wednesday')
     const thursday = createDayTitleData('Thursday')
     const friday = createDayTitleData('Friday')
-    const titles = {
-        'Monday': monday, 'Tuesday': tuesday, 'Wednesday': wednesday,
-        'Thursday': thursday, 'Friday': friday
-    }
+    const titles = [monday, tuesday, wednesday, thursday, friday];
     const groupData = { groupName: 'todo', titles, display: false };
     return groupData;
 }
@@ -56,7 +53,10 @@ const Home = () => {
         setGroup(startGroup.groupName);
         const titleKeys = Object.keys(startGroup.titles);
         const startTitleKey = titleKeys[titleKeys.length - 1]; // get first title... same as above, perhaps should be in A...Z order
-        const startTitle = startGroup.titles[startTitleKey];
+        const startTitle = startGroup.titles.find((td:TitleData) => (td.titleName == startTitleKey));
+        if (!startTitle){
+            return;
+        }
         setTitle(startTitle.titleName);
         const sessionKeys = Object.keys(startTitle.sessions);
         const startSession = startTitle.sessions[sessionKeys[0]]; // get first session... should be in date order
@@ -119,7 +119,7 @@ const Home = () => {
     }
 
     const selectData = (gd: GroupData, title: string) => {
-        const titleData = gd.titles[title];
+        const titleData = gd.titles.find((td:TitleData) => (td.titleName.indexOf(title) > -1));
         if (!titleData){
             setTitle("");
             return;
@@ -149,7 +149,7 @@ const Home = () => {
     }
 
     const saveData = () => {
-        const groupDataInList = groupDataList.find((gd: GroupData) => gd.groupName === group);
+        const groupDataInList = groupDataList.find((gd: GroupData) => (gd.groupName.indexOf(group) > -1));
         if (!groupDataInList) {
             const newGroup = createNewGroup();
             const newList = [...groupDataList, newGroup];
@@ -182,9 +182,9 @@ const Home = () => {
     }
 
     const addToGroup = (gd: GroupData) => {
-        const td = gd.titles[title];
+        const td = gd.titles.find((td:TitleData) => (td.titleName.indexOf(title) > -1)); 
         if (!td) {
-            gd.titles[title] = createTitleData();
+            gd.titles.push(createTitleData());
             return gd;
         }
         setMark(() => getMark());
@@ -200,11 +200,15 @@ const Home = () => {
     }
 
     const updateTitleData = (mark: string) => {
-        const groupDataInList = groupDataList.find((gd: GroupData) => gd.groupName === group);
+        const groupDataInList = groupDataList.find((gd: GroupData) => gd.groupName.indexOf(group) > -1);
         if (!groupDataInList) {
             return;
         }
-        delete groupDataInList.titles[title].sessions[mark]
+        const groupsTitles = groupDataInList.titles.find((td:TitleData) => (td.titleName == title));
+        if (!groupsTitles){
+            return;
+        }
+        delete groupsTitles.sessions[mark];
         const expandedGroup = addToGroup(groupDataInList);
         const newList = replaceGroupData(expandedGroup);
         commit(newList);
@@ -215,7 +219,11 @@ const Home = () => {
         if (!groupDataInList) {
             return;
         }
-        delete groupDataInList.titles[title].sessions[mark]
+        const groupsTitles = groupDataInList.titles.find((td:TitleData) => (td.titleName == title));
+        if (!groupsTitles){
+            return;
+        }
+        delete groupsTitles.sessions[mark];
         const newList = replaceGroupData(groupDataInList);
         commit(newList);
         setTitle("");
@@ -231,9 +239,7 @@ const Home = () => {
     }
 
     const createNewGroup = () => {
-        const titleData = createTitleData();
-        const titles: Record<string, TitleData> = {};
-        titles[title] = titleData;
+        const titles = [createTitleData()];
         const groupData: GroupData = { groupName: group, titles, display: true };
         return groupData;
     }
@@ -283,12 +289,10 @@ const Home = () => {
         if (!selectedGroup) {
             return;
         }
-        const titleKeys = Object.keys(selectedGroup.titles);
-        const titleIndex = titleKeys.indexOf(title);
-        const nextIndex = titleIndex + 1 == titleKeys.length ? 0 : titleIndex + 1;
-        const titleKey = titleKeys[nextIndex];
-        const titleData = selectedGroup.titles[titleKey];
-        const session = titleData.sessions['single'];
+        const titleIndex = selectedGroup.titles.findIndex((td:TitleData) => td.titleName == title);
+        const nextIndex = titleIndex + 1 == selectedGroup.titles.length ? 0 : titleIndex + 1;
+        const nextTitleData = selectedGroup.titles[nextIndex];
+        const session = nextTitleData.sessions['single'];
         session.fields[0].list?.unshift(field);
     }
 

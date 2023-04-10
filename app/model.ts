@@ -52,7 +52,7 @@ export type Session = {
 
 export type GroupData = {
     groupName: string,
-    titles: Record<string, TitleData>
+    titles: Array<TitleData>,
     display: boolean
 }
 
