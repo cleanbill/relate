@@ -29,7 +29,9 @@ const Define = (props: DefineProps) => {
     }
 
     const change = (fn: Function, e: ChangeEvent<HTMLInputElement>) => {
-        fn(e.target.value);
+        if (e.target.value){
+            fn(e.target.value);
+        }
     }
 
     const newTitle = () => {

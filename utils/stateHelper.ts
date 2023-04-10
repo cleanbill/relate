@@ -8,11 +8,11 @@ const json = (text: string): any => {
   }
 };
 
-function establish<T> (
+function establish<T>(
   statename: string,
   defaultValue: T,
   setter: Function = () => {},
-): T  {
+): T {
   const stored = localStorage.getItem(statename);
   try {
     const place = stored ? json(stored) : defaultValue;
@@ -23,24 +23,31 @@ function establish<T> (
     setter(defaultValue);
     return defaultValue;
   }
-};
-
-const getTitleData = (groupDataList: Array<GroupData> , groupName: string, titleName: string) => {
-  console.log('getTitleData ', groupDataList, groupName, titleName);
-  const groupData = groupDataList.find((listData: GroupData) => listData.groupName == groupName);
-  if (!groupData) {
-    console.log('getTitleData: no group data');
-      return {} as TitleData;
-  }
-  const td: TitleData = groupData.titles[titleName];
-  if (!td) {
-    console.log('getTitleData: no title data');
-
-      return {} as TitleData;
-  }
-  console.log('getTitleData: td is ', td);
-  return td;
 }
 
+const getTitleData = (
+  groupDataList: Array<GroupData>,
+  groupName: string,
+  titleName: string,
+): TitleData => {
+  console.log("getTitleData ", groupDataList, groupName, titleName);
+  const groupData = groupDataList.find((listData: GroupData) =>
+    listData.groupName == groupName
+  );
+  if (!groupData) {
+    console.log("getTitleData: no group data");
+    return {} as TitleData;
+  }
+  const td = groupData.titles.find((td: TitleData) =>
+    td.titleName == titleName
+  );
+  if (!td) {
+    console.log("getTitleData: no title data");
+
+    return {} as TitleData;
+  }
+  console.log("getTitleData: td is ", td);
+  return td;
+};
+
 export { establish, getTitleData };
-;

@@ -1,3 +1,4 @@
+/* need to set.... "css.lint.unknownAtRules": "ignore" */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
