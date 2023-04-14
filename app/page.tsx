@@ -4,34 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Define from '../components/define';
 import Groups from '../components/groups';
 import FieldForm from '../components/fieldForm';
-import { establish } from '../utils/stateHelper';
+import { createNewGroup, createTitleData, createTodoGroup, establish, exportData, fillInComponentType, getComponentType, getMark, importData, isSingleton } from '../utils/stateHelper';
 import { TitleData, Field, FieldComponentType, FieldType, GroupData, Session } from './model';
 
-const createDayTitleData = (day: string): TitleData => {
-    const titleName = day;
-    const fields = new Array<Field>();
-    const ETLField = {
-        fieldComponentType: FieldComponentType.ETL,
-        fieldName: day,
-        fieldType: FieldType.list,
-        value: "",
-        list: Array<Field>()
-    } as Field;
-    fields.push(ETLField);
-    const session = { group: 'todo', title: day, mark: day, fields }
-    return { titleName, singleton: true, sessions: { 'single': session } }
-}
 
-const createTodoGroup = (): GroupData => {
-    const monday = createDayTitleData('Monday')
-    const tuesday = createDayTitleData('Tuesday')
-    const wednesday = createDayTitleData('Wednesday')
-    const thursday = createDayTitleData('Thursday')
-    const friday = createDayTitleData('Friday')
-    const titles = [monday, tuesday, wednesday, thursday, friday];
-    const groupData = { groupName: 'todo', titles, display: false };
-    return groupData;
-}
 
 const Home = () => {
     const [groupDataList, setGroupDataList] = useState([] as Array<GroupData>);
@@ -39,8 +15,6 @@ const Home = () => {
     const [title, setTitle] = useState("");
     const [fields, setFields] = useState([] as Array<Field>);
     const [mark, setMark] = useState('Unsaved');
-
-    const isSingleton = (fds: Field[]) => fds[0]?.fieldComponentType == FieldComponentType.ETL;
 
     useEffect(() => {
         const startingData = establish<Array<GroupData>>("groups", groupDataList, setGroupDataList);
@@ -63,24 +37,9 @@ const Home = () => {
         updateFields(startSession.fields);
     }, []);
 
-    const getComponentType = (fieldType: FieldType): FieldComponentType => {
-        if (fieldType == FieldType.happy) {
-            return FieldComponentType.HAPPY;
-        }
-        if (fieldType == FieldType.list) {
-            return FieldComponentType.ETL;
-        }
-
-        return FieldComponentType.NONE;
-    }
 
     const updateFields = (fields: Array<Field>) =>
         setFields(fields.map(field => fillInComponentType(field)));
-
-    const fillInComponentType = (field: Field): Field => {
-        field.fieldComponentType = getComponentType(field.fieldType);
-        return field;
-    }
 
     const updateField = (index: number) => {
         const fieldNameElement = document.getElementById('fieldName-' + index) as HTMLInputElement;
@@ -151,7 +110,8 @@ const Home = () => {
     const saveData = () => {
         const groupDataInList = groupDataList.find((gd: GroupData) => (gd.groupName.indexOf(group) > -1));
         if (!groupDataInList) {
-            const newGroup = createNewGroup();
+            const session = getCurrentSession();
+            const newGroup = createNewGroup(session, group, title);
             const newList = [...groupDataList, newGroup];
             commit(newList);
             return;
@@ -159,15 +119,6 @@ const Home = () => {
         const expandedGroup = addToGroup(groupDataInList);
         const newList = replaceGroupData(expandedGroup);
         commit(newList);
-    }
-
-    const z = (n: number) => n < 10 ? "0" + n : n + "";
-
-    const getMark = (includeMinutes = false) => {
-        const now = new Date();
-        const minutes = includeMinutes ? z(now.getMinutes()) : '00';
-        const mark = now.getFullYear() + "-" + z(now.getMonth()) + "-" + z(now.getDate()) + ":" + z(now.getHours()) + ':' + minutes;
-        return mark;
     }
 
     const getCurrentSession = () => {
@@ -184,7 +135,8 @@ const Home = () => {
     const addToGroup = (gd: GroupData) => {
         const td = gd.titles.find((td:TitleData) => (td.titleName.indexOf(title) > -1)); 
         if (!td) {
-            gd.titles.push(createTitleData());
+            const session = getCurrentSession();
+            gd.titles.push(createTitleData(session, title));
             return gd;
         }
         setMark(() => getMark());
@@ -229,59 +181,9 @@ const Home = () => {
         setTitle("");
     }
 
-    const createTitleData = () => {
-        const session = getCurrentSession();
-        const sessions: Record<string, Session> = {};
-        sessions[session.mark] = session;
-        const singleton = isSingleton(session.fields);
-        const titleData: TitleData = { titleName: title, sessions, singleton }
-        return titleData;
-    }
-
-    const createNewGroup = () => {
-        const titles = [createTitleData()];
-        const groupData: GroupData = { groupName: group, titles, display: true };
-        return groupData;
-    }
-
     const commit = (newList: Array<GroupData>) => {
         setGroupDataList(newList);
         localStorage.setItem('groups', JSON.stringify(newList));
-    }
-
-    const exportData = () => {
-        console.log('Exporting ', groupDataList);
-        const fileName = 'relate-' + getMark(true) + '.json';
-        const fileToSave = new Blob([JSON.stringify(groupDataList, null, 4)], {
-            type: 'application/json'
-        });
-
-        const url = window.URL || window.webkitURL;
-        const link = url.createObjectURL(fileToSave);
-        const a = document.createElement("a");
-        a.download = fileName;
-        a.href = link;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
-    const importData = async () => {
-        const filename = document.getElementById('export') as any;
-        filename?.click();
-        console.log(filename.files[0]);
-        // const formData = new FormData();
-
-        const file_reader = new FileReader();
-        file_reader.addEventListener("load", () => {
-            const uploaded = file_reader.result;
-            console.log('uploaded.....', uploaded);
-        });
-        file_reader.readAsDataURL(filename.files[0]);
-
-        // formData.append("savedData", filename.files[0]);
-        // const what = await fetch('', { method: "POST", body: formData });
-        // console.log(await what.json());
     }
 
     const next = (field: Field) => {
@@ -338,11 +240,11 @@ const Home = () => {
             </div>
             <div className="lg:bg-blue-200 grid grid-cols-2 w-100 gap-10 h-full">
 
-                <button onClick={importData} className="butt sg:mb-4 justify-self-start ml-3">Import</button>
+                <button onClick={() => importData()} className="butt sg:mb-4 justify-self-start ml-3">Import</button>
                 <input type="file" hidden
                     id="export" name="export"
-                    accept="application/json" onChange={importData} />
-                <button onClick={exportData} className="butt sg:mb-4 justify-self-end">Export</button>
+                    accept="application/json" onChange={() => importData()} />
+                <button onClick={() => exportData(groupDataList)} className="butt sg:mb-4 justify-self-end">Export</button>
             </div>
             <a className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <Define

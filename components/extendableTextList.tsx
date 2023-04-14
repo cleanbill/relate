@@ -47,12 +47,29 @@ const ExtendableTextList = (props: Props) => {
         setFields([...fields, newField]);
     }
 
+    const getFocused = (el:HTMLInputElement) =>{
+        if (!el){
+            return;
+        }
+        el.focus();
+        if (!props.defaultFields){
+            return;
+        }
+        el.value = '';
+        if (props.defaultFields.length == 0){
+            return;
+        }
+        const newIndex = props.defaultFields.length -1;
+        const lastField = props.defaultFields[newIndex];
+        if (!lastField){
+            return;
+        }
+        el.value = lastField.value;
+    }   
+
     useEffect(() => {
         const el = document.getElementById(focusId || 'missing') as HTMLInputElement;
-        if (el) {
-            el.focus();
-            el.value = props.defaultFields[props.defaultFields.length - 1].value;
-        }
+        getFocused(el);
         setFields([... props.defaultFields])
     }, [focusId, props.defaultFields])
 
