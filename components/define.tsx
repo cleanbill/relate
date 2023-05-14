@@ -13,13 +13,27 @@ interface DefineProps {
 
 const Define = (props: DefineProps) => {
 
+    const [needFocus, setNeedFocus] = useState(false);
+
     useEffect(() => {
         const lastFieldID = "fieldName-" + (props.fields.length - 1);
         const lastField = document.getElementById(lastFieldID);
-        lastField?.focus();
+        if (needFocus){
+            lastField?.focus();
+            setNeedFocus(false);
+        }
         //            lastField?.scrollIntoView();
     }, [props.fields.length]);
 
+    const addField = () =>{
+        setNeedFocus(true);
+        props.add();
+    }
+
+    const takeField = (i:number) => {
+        setNeedFocus(true);
+        props.take(i);
+    }
 
     const valueRef = (element: HTMLInputElement, val: string) => {
         if (!element) {
@@ -76,7 +90,7 @@ const Define = (props: DefineProps) => {
                     </div>
 
                     {props.fields.length == 0 && <div className='float-right' style={{ float: 'right' }}>
-                        <button title="New Field" type="button" onClick={() => props.add()} className="butt-colour focus:ring-4  font-medium float-right rounded-lg text-sm w-10 p-1 focus:outline-none ">
+                        <button title="New Field" type="button" onClick={() => addField()} className="butt-colour focus:ring-4  font-medium float-right rounded-lg text-sm w-10 p-1 focus:outline-none ">
                             <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
                             <span className="sr-only">add field</span>
                         </button>
@@ -97,13 +111,13 @@ const Define = (props: DefineProps) => {
                                     )}
                                 </select>
                             </div>
-                            <button title="Delete Field" type="button" onClick={() => props.take(index)} className="butt-colour font-medium rounded-lg text-sm px-2 w-10 h-10 focus:outline-none ">
+                            <button title="Delete Field" type="button" onClick={() => takeField(index)} className="butt-colour font-medium rounded-lg text-sm px-2 w-10 h-10 focus:outline-none ">
                                 <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
                                 </svg>
                             </button>
                             {index != (props.fields.length - 1) || <div className='float-right' style={{ float: 'right' }}>
-                                <button title="New Field" type="button" onClick={() => props.add()} className="butt-colour focus:ring-4  font-medium float-right rounded-lg text-sm w-10 p-1 focus:outline-none ">
+                                <button title="New Field" type="button" onClick={() => addField()} className="butt-colour focus:ring-4  font-medium float-right rounded-lg text-sm w-10 p-1 focus:outline-none ">
                                     <svg aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
                                     <span className="sr-only">add field</span>
                                 </button>

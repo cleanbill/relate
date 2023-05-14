@@ -32,16 +32,14 @@ export type ArchivedFile ={
     archivedOn: Date
 } 
 
-const grid = 8;
-
 const ExtendableTextList = (props: Props) => {
     const [activeId, setActiveId] = useState(null);
-    const [focusId, setfocusId] = useState(null as string | null);
+    const [focusID, setfocusID] = useState(null as string | null);
     const [fields, setFields] = useState([] as Array<Field>);
 
     const add = () => {
         console.log('Adding field number ' + fields.length);
-        setfocusId('input-' + fields.length);
+        setfocusID('input-' + fields.length);
         const newField: Field = { id: fields.length, fieldName: '', fieldType: FieldType.text, indent: 0, fieldComponentType: FieldComponentType.NONE, value: '' };
         props.setFields([...fields, newField]);
         setFields([...fields, newField]);
@@ -68,10 +66,10 @@ const ExtendableTextList = (props: Props) => {
     }   
 
     useEffect(() => {
-        const el = document.getElementById(focusId || 'missing') as HTMLInputElement;
+        const el = document.getElementById(focusID || 'missing') as HTMLInputElement;
         getFocused(el);
         setFields([... props.defaultFields])
-    }, [focusId, props.defaultFields])
+    }, [focusID, props.defaultFields])
 
     const sensors = useSensors(
         useSensor(PointerSensor),

@@ -6,12 +6,14 @@ import History from '../components/history';
 interface GroupsState { groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null };
 interface GroupsProps {
     groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null
-    , select: Function, overrideFields: Function, updateTitleData: Function, deleteGroup: Function
+    , select: Function, overrideFields: Function, updateTitleData: Function, deleteGroup: Function,
+    toggleShow: Function
 };
 
 const Groups = (props: GroupsProps) => {
 
     const [state, setState] = useState({ groups: props.groups, selectedTitle: "", selectedGroup: null } as GroupsState);
+    const [show, setShow] = useState(true);
 
     useEffect(() => {
         const groups = updateGroups(props.groups, props.selectedGroup, props.selectedTitle);
@@ -140,14 +142,19 @@ const Groups = (props: GroupsProps) => {
 
     return (
         <>
-            <h5 className=" mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Groups and Titles</h5>
+            <h5 className=" mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                Groups and Titles
+                <button onClick={() => props.toggleShow()} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">
+                    <span>X</span> </button>
+            </h5>
             <div className="font-normal text-gray-700 dark:text-gray-400">
                 {state.groups.map((gd: GroupData, index: number) => (
                     gd && <div key={index}>
-
-                        <button onClick={() => toggle(index)} type="button" className="flex items-center justify-between w-full p-5 font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-yellow-600 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white">
-                            <span className={gd.display ? 'text-white w-full' : 'text-stone-700 w-full'}>{gd.groupName} <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">X</button></span>
-                        </button>
+                        <div onClick={() => toggle(index)} className="flex items-center justify-between w-full p-5 font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-yellow-600 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <span className={gd.display ? 'text-white w-full' : 'text-stone-700 w-full'}>{gd.groupName}
+                                <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">X</button>
+                            </span>
+                        </div>
                         {gd.display &&
                             gd.titles.map((titleData: TitleData, i: number) => (
 

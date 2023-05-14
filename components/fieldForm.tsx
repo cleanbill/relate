@@ -13,25 +13,25 @@ interface FieldFormProps {
     next: Function
 };
 
-const FieldForm = (props:FieldFormProps) => {
+const FieldForm = (props: FieldFormProps) => {
 
-    const [state, setState] = useState({ title: props.title, fields: props.fields, mark: props.mark } as FieldFormState );
+    const [state, setState] = useState({ title: props.title, fields: props.fields, mark: props.mark } as FieldFormState);
 
-    const clearETL = (field:Field) => {
-        if (!field.list){
+    const clearETL = (field: Field) => {
+        if (!field.list) {
             return;
         }
-        field.list = field.list.map(field =>{
+        field.list = field.list.map(field => {
             field.value = '';
             return field;
         });
     }
 
-    const clearData = (field:Field, index: number) =>{
-        if (field.fieldComponentType = FieldComponentType.ETL){
+    const clearData = (field: Field, index: number) => {
+        if (field.fieldComponentType == FieldComponentType.ETL) {
             clearETL(field);
             return;
-        } 
+        }
         props.updateFieldData(index, "");
         const fieldElement = document.getElementById('fieldData-' + index) as HTMLInputElement;
         fieldElement.value = '';
@@ -42,48 +42,53 @@ const FieldForm = (props:FieldFormProps) => {
 
     const clearAllData = () => {
         for (var index = 0; index < state.fields.length; index++) {
-          clearData(state.fields[index], index);
+            clearData(state.fields[index], index);
         }
-        setState(old => ({ title: old.title, fields: [... old.fields], mark: old.mark }));
+        setState(old => ({ title: old.title, fields: [...old.fields], mark: old.mark }));
     }
 
-    const moveToNext = (field:Field) =>{
+    const moveToNext = (field: Field) => {
         props.next(field);
     }
 
-    const indent = (fieldIndex:number, listNo: number, tabs:number) =>{
+    const indent = (fieldIndex: number, listNo: number, tabs: number) => {
         const field = state.fields[fieldIndex];
         const list = field.list;
-        if (!list){
+        if (!list) {
             return;
         }
-        const updatedList = list.map((f:Field, i:number)  => {
-            if (listNo != i){
+        const updatedList = list.map((f: Field, i: number) => {
+            if (listNo != i) {
                 return f;
             }
-            f.indent = isNaN(f.indent)? tabs: f.indent + tabs;
+            f.indent = isNaN(f.indent) ? tabs : f.indent + tabs;
             f.id = i;
             return f;
         })
         field.list = updatedList;
-        const fields = state.fields.map((f:Field,i:number) => {
-            if (i == fieldIndex){
+        const fields = state.fields.map((f: Field, i: number) => {
+            if (i == fieldIndex) {
                 return field;
             }
             return f;
         });
-        setState(old => ({ title: old.title, fields: [... fields], mark: old.mark }));
+        setState(old => ({ title: old.title, fields: [...fields], mark: old.mark }));
     }
 
-    useEffect(() =>{
-        setState(() => ({ title: props.title, fields: [... props.fields], mark: props.mark }));
+    useEffect(() => {
+        setState(() => ({ title: props.title, fields: [...props.fields], mark: props.mark }));
+        /// work out focus props.fields.f
     }, [props])
 
     return (
         <>
             {!state.title || (
-                <><h5 title='fill in the form' className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{state.title} <span className="text-sm">- {showDate(state.mark)} <button onClick={() => {props.deleteTitleData(state.mark)}} className="butt float-right mb-10 w-6 h-5 bg-blue-100">X</button></span></h5>
-                    
+                <><h5 title='fill in the form' className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {state.title}
+                    <span className="text-sm">- {showDate(state.mark)}
+                        <button onClick={() => { props.deleteTitleData(state.mark) }} className="butt float-right mb-10 w-6 h-5 bg-blue-100">X</button>
+                    </span>
+                </h5>
                     <div className="font-normal text-gray-700 dark:text-gray-400">
                         {state.fields.map((field, index: number) => (
                             <div key={index} className="mb-6">
@@ -102,9 +107,9 @@ const FieldForm = (props:FieldFormProps) => {
                                     ></Happy>
                                 }
                                 {field.fieldComponentType == FieldComponentType.ETL &&
-                                    <ExtendableTextList indent={(listNo:number, i:number)=> indent(index,listNo, i)} next={(field:Field) => moveToNext(field)} 
+                                    <ExtendableTextList indent={(listNo: number, i: number) => indent(index, listNo, i)} next={(field: Field) => moveToNext(field)}
                                         onChange={(value: string) => props.updateFieldData(index, value)}
-                                        defaultFields={field.list || []} setFields={(fields:Array<Field>) => 
+                                        defaultFields={field.list || []} setFields={(fields: Array<Field>) =>
                                             props.updateFieldData(index, null, fields)}
                                     ></ExtendableTextList>
                                 }

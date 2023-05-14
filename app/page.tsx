@@ -15,6 +15,7 @@ const Home = () => {
     const [title, setTitle] = useState("");
     const [fields, setFields] = useState([] as Array<Field>);
     const [mark, setMark] = useState('Unsaved');
+    const [showGroup, setShowGroup] = useState(true);
 
     useEffect(() => {
         const startingData = establish<Array<GroupData>>("groups", groupDataList, setGroupDataList);
@@ -27,8 +28,8 @@ const Home = () => {
         setGroup(startGroup.groupName);
         const titleKeys = Object.keys(startGroup.titles);
         const startTitleKey = titleKeys[titleKeys.length - 1]; // get first title... same as above, perhaps should be in A...Z order
-        const startTitle = startGroup.titles.find((td:TitleData) => (td.titleName == startTitleKey));
-        if (!startTitle){
+        const startTitle = startGroup.titles.find((td: TitleData) => (td.titleName == startTitleKey));
+        if (!startTitle) {
             return;
         }
         setTitle(startTitle.titleName);
@@ -78,13 +79,17 @@ const Home = () => {
     }
 
     const selectData = (gd: GroupData, title: string) => {
-        const titleData = gd.titles.find((td:TitleData) => (td.titleName.indexOf(title) > -1));
-        if (!titleData){
+        const titleData = gd.titles.find((td: TitleData) => (td.titleName.indexOf(title) > -1));
+        if (!titleData) {
             setTitle("");
             return;
         }
         const sessionKeys = Object.keys(titleData.sessions);
         const startSession = titleData.sessions[sessionKeys[0]]; // get first session... should be in date order
+        if (!startSession){
+            setTitle("");
+            return;
+        }
         setGroup(gd.groupName);
         setTitle(title);
         const startFields = startSession.fields.map(field => fillInComponentType(field));
@@ -133,7 +138,7 @@ const Home = () => {
     }
 
     const addToGroup = (gd: GroupData) => {
-        const td = gd.titles.find((td:TitleData) => (td.titleName.indexOf(title) > -1)); 
+        const td = gd.titles.find((td: TitleData) => (td.titleName.indexOf(title) > -1));
         if (!td) {
             const session = getCurrentSession();
             gd.titles.push(createTitleData(session, title));
@@ -156,8 +161,8 @@ const Home = () => {
         if (!groupDataInList) {
             return;
         }
-        const groupsTitles = groupDataInList.titles.find((td:TitleData) => (td.titleName == title));
-        if (!groupsTitles){
+        const groupsTitles = groupDataInList.titles.find((td: TitleData) => (td.titleName == title));
+        if (!groupsTitles) {
             return;
         }
         delete groupsTitles.sessions[mark];
@@ -171,8 +176,8 @@ const Home = () => {
         if (!groupDataInList) {
             return;
         }
-        const groupsTitles = groupDataInList.titles.find((td:TitleData) => (td.titleName == title));
-        if (!groupsTitles){
+        const groupsTitles = groupDataInList.titles.find((td: TitleData) => (td.titleName == title));
+        if (!groupsTitles) {
             return;
         }
         delete groupsTitles.sessions[mark];
@@ -191,7 +196,7 @@ const Home = () => {
         if (!selectedGroup) {
             return;
         }
-        const titleIndex = selectedGroup.titles.findIndex((td:TitleData) => td.titleName == title);
+        const titleIndex = selectedGroup.titles.findIndex((td: TitleData) => td.titleName == title);
         const nextIndex = titleIndex + 1 == selectedGroup.titles.length ? 0 : titleIndex + 1;
         const nextTitleData = selectedGroup.titles[nextIndex];
         const session = nextTitleData.sessions['single'];
@@ -207,24 +212,30 @@ const Home = () => {
         setFn("");
     }
 
+    
+
     return (
         <div className="lg:bg-blue-200">
-            <div className="lg:bg-blue-200 grid sg:grid-cols-1 lg:grid-cols-3 w-100 gap-10 h-full">
+            <div className={showGroup?"lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full lg:grid-cols-3 gap-10 ": "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full"} >
 
                 <div className='sg:col-span-2'>
-                    <a className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    {showGroup && <a className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <Groups selectedGroup={group} selectedTitle={title} groups={groupDataList} select={selectData}
                             overrideFields={overrideFields}
                             updateTitleData={updateTitleData}
                             deleteGroup={deleteGroup}
+                            toggleShow={() => setShowGroup(false)}
                         ></Groups>
-                    </a>
+                    </a>}
+                    {!showGroup && <a className="block w-6 m-1 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <button className="ml-1" onClick={() => setShowGroup(true)}><b>G</b></button>
+                    </a>}
                 </div>
 
                 {/* <SpinWheel></SpinWheel> */}
 
                 <div className='col-span-2'>
-                    <a className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
+                    {fields.length > 0 && <a className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
                         <FieldForm
                             next={(field: Field) => next(field)}
                             title={title}
@@ -234,7 +245,7 @@ const Home = () => {
                             saveData={saveData}
                             mark={mark}
                         ></FieldForm>
-                    </a>
+                    </a>}
 
                 </div>
             </div>
