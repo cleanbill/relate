@@ -86,7 +86,7 @@ const Home = () => {
         }
         const sessionKeys = Object.keys(titleData.sessions);
         const startSession = titleData.sessions[sessionKeys[0]]; // get first session... should be in date order
-        if (!startSession){
+        if (!startSession) {
             setTitle("");
             return;
         }
@@ -212,11 +212,20 @@ const Home = () => {
         setFn("");
     }
 
-    
+    const changeLayout = (on: boolean) => {
+        const doc: any = document;
+        if (!doc.startViewTransition) {
+            console.warn("No view transistion");
+            setShowGroup(on);
+        } else {
+            doc.startViewTransition(() => setShowGroup(on));
+        }
+    }
+
 
     return (
-        <div className="lg:bg-blue-200">
-            <div className={showGroup?"lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full lg:grid-cols-3 gap-10 ": "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full"} >
+        <div className="lg:bg-blue-200 ">
+            <div className={showGroup ? "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full lg:grid-cols-3 gap-10 " : "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full"} >
 
                 <div className='sg:col-span-2'>
                     {showGroup && <a className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
@@ -224,17 +233,17 @@ const Home = () => {
                             overrideFields={overrideFields}
                             updateTitleData={updateTitleData}
                             deleteGroup={deleteGroup}
-                            toggleShow={() => setShowGroup(false)}
+                            toggleShow={() => changeLayout(false)}
                         ></Groups>
                     </a>}
                     {!showGroup && <a className="block w-6 m-1 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <button className="ml-1" onClick={() => setShowGroup(true)}><b>G</b></button>
+                        <button className="ml-1" onClick={() => changeLayout(true)}><b>G</b></button>
                     </a>}
                 </div>
 
                 {/* <SpinWheel></SpinWheel> */}
 
-                <div className='col-span-2'>
+                <div className='col-span-2 align-top '>
                     {fields.length > 0 && <a className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
                         <FieldForm
                             next={(field: Field) => next(field)}
@@ -249,14 +258,6 @@ const Home = () => {
 
                 </div>
             </div>
-            <div className="lg:bg-blue-200 grid grid-cols-2 w-100 gap-10 h-full">
-
-                <button onClick={() => importData()} className="butt sg:mb-4 justify-self-start ml-3">Import</button>
-                <input type="file" hidden
-                    id="export" name="export"
-                    accept="application/json" onChange={() => importData()} />
-                <button onClick={() => exportData(groupDataList)} className="butt sg:mb-4 justify-self-end">Export</button>
-            </div>
             <a className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <Define
                     fields={fields} group={group} title={title}
@@ -268,7 +269,18 @@ const Home = () => {
 
             </a>
 
-            <footer className="pt-4 w-full  bg-white max-w rounded-lg shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 static bottom-0">
+
+            <footer className="pt-4 w-full  bg-white max-w rounded-lg shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 static bottom-0 mt-96">
+
+                <div className=" grid grid-cols-2 w-100 gap-10 h-full">
+
+                    <button onClick={() => importData()} className="butt sg:mb-4 justify-self-start ml-3">Import</button>
+                    <input type="file" hidden
+                        id="export" name="export"
+                        accept="application/json" onChange={() => importData()} />
+                    <button onClick={() => exportData(groupDataList)} className="butt sg:mb-4 justify-self-end">Export</button>
+                </div>
+
                 <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2022 <a href="https://github.com/cleanbill/relate" className="hover:underline">Relatable™</a>. All Rights Reserved.
                 </span>
                 <ul className="flex flex-wrap items-center mt-3 text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
