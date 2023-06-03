@@ -6,12 +6,36 @@
 @layer components {
 
     .butt-colour {
-        @apply text-black bg-blue-300 hover:bg-yellow-600 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
+        @apply text-black bg-blue-300 hover:bg-blue-400 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
     }
     .butt {
         @apply butt-colour mt-3 mr-3 focus:ring-4 font-medium rounded-lg text-sm px-2 lg:w-20 h-10   focus:outline-none 
     }
+
+    .blocked {
+        @apply m-5 block p-2 hover:bg-white rounded-lg border border-gray-200 shadow-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700
+    }
     
+}
+
+ln:nth-child(1){
+    background-color: color-mix(in srgb, red 10%, white);
+}
+
+ln:nth-child(2){
+    background-color: color-mix(in srgb, red 25%, white);
+}
+
+ln:nth-child(3){
+    background-color: color-mix(in srgb, red 50%, white);
+}
+
+ln:nth-child(4){
+    background-color: color-mix(in srgb, red 75%, white);
+}
+
+ln:nth-child(5){
+    background-color: color-mix(in srgb, red 100%, white);
 }
 
 ::view-transition-old(root),

@@ -228,7 +228,7 @@ const Home = () => {
             <div className={showGroup ? "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full lg:grid-cols-3 gap-10 " : "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full"} >
 
                 <div className='sg:col-span-2'>
-                    {showGroup && <a className="block lg:mt-2 sg:m-1 sg:mr-2 sg:w-96 lg:ml-3 lg:p-6 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    {showGroup && <a className="blocked">
                         <Groups selectedGroup={group} selectedTitle={title} groups={groupDataList} select={selectData}
                             overrideFields={overrideFields}
                             updateTitleData={updateTitleData}
@@ -236,7 +236,7 @@ const Home = () => {
                             toggleShow={() => changeLayout(false)}
                         ></Groups>
                     </a>}
-                    {!showGroup && <a className="block w-6 m-1 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    {!showGroup && <a className="blocked">
                         <button className="ml-1" onClick={() => changeLayout(true)}><b>G</b></button>
                     </a>}
                 </div>
@@ -244,7 +244,7 @@ const Home = () => {
                 {/* <SpinWheel></SpinWheel> */}
 
                 <div className='col-span-2 align-top '>
-                    {fields.length > 0 && <a className="block mt-2 lg:p-6 sg:p-2 sg:m-5 lg:mr-3 lg:max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 sg:w-96 dark:hover:bg-gray-700">
+                    {fields.length > 0 && <a className="blocked">
                         <FieldForm
                             next={(field: Field) => next(field)}
                             title={title}
@@ -258,7 +258,7 @@ const Home = () => {
 
                 </div>
             </div>
-            <a className="m-5 block p-2 max-w bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <a className="blocked">
                 <Define
                     fields={fields} group={group} title={title}
                     setGroup={(value: string) => update(value, setGroup)}
