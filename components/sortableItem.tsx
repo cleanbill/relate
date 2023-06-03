@@ -69,7 +69,7 @@ const SortableItem = (props: Props) => {
   const showManana = props.id == 0 || (isNaN(props.indent) ||props.indent == 0);
 
   return (
-    <div className={"grid grid-cols-[0fr,3fr,10fr,0fr]"}>
+    <div className={"grid grid-cols-[0fr,3fr,10fr,0fr] w-full"}>
       <div ref={setNodeRef} className={"w-6/12 m-10 border-2 outline outline-blue" + isDragging ? 'z-50 opacity-30' : 'opacity-100'} >
         <button className="h-21 self-center" {...listeners} {...attributes}>
           <svg viewBox="0 0 20 20" width="30"><path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"></path></svg>
@@ -79,7 +79,7 @@ const SortableItem = (props: Props) => {
         {!showManana && <div className="w-9"></div>}
         {showManana && <button onClick={() => manana()} title='Do it tomorrow' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">T</button>}
         {showIndent && <button onClick={() => indent()} title='indent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">+</button>}
-        {!showIndent && <div className="w-9"></div>}
+        {!showIndent && <div></div>}
         {props.indent > 0 && <button onClick={() => unindent()} title='unindent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">-</button>}
       </div>
       <span>
@@ -87,7 +87,10 @@ const SortableItem = (props: Props) => {
       <input ref={valueRef} name={field} title={'field ' + props.id} id={'input-' + props.id} className='lg:w-96 sg:w-40 h-7' onKeyUp={keyup}
         onChange={e => props?.onChange(props.id, e.target.value)}
         type='text' ></input>
+    
         </span>
+    
+
       <button onClick={e => props.delete(props.id)} className="ml-3 justify-self-end text-white bg-blue-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 sg:mr-1.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">X</button>
     </div>
   );

@@ -27,10 +27,10 @@ type Props = {
     next: Function;
 }
 
-export type ArchivedFile ={
+export type ArchivedFile = {
     field: Field;
     archivedOn: Date
-} 
+}
 
 const ExtendableTextList = (props: Props) => {
     const [activeId, setActiveId] = useState(null);
@@ -45,30 +45,30 @@ const ExtendableTextList = (props: Props) => {
         setFields([...fields, newField]);
     }
 
-    const getFocused = (el:HTMLInputElement) =>{
-        if (!el){
+    const getFocused = (el: HTMLInputElement) => {
+        if (!el) {
             return;
         }
         el.focus();
-        if (!props.defaultFields){
+        if (!props.defaultFields) {
             return;
         }
         el.value = '';
-        if (props.defaultFields.length == 0){
+        if (props.defaultFields.length == 0) {
             return;
         }
-        const newIndex = props.defaultFields.length -1;
+        const newIndex = props.defaultFields.length - 1;
         const lastField = props.defaultFields[newIndex];
-        if (!lastField){
+        if (!lastField) {
             return;
         }
         el.value = lastField.value;
-    }   
+    }
 
     useEffect(() => {
         const el = document.getElementById(focusID || 'missing') as HTMLInputElement;
         getFocused(el);
-        setFields([... props.defaultFields])
+        setFields([...props.defaultFields])
     }, [focusID, props.defaultFields])
 
     const sensors = useSensors(
@@ -107,9 +107,9 @@ const ExtendableTextList = (props: Props) => {
         const archivedField = fields[index];
         if (archivedField.value) {
             const storedArchivedFields = localStorage.getItem('archive');
-            const archivedFields = storedArchivedFields? JSON.parse(storedArchivedFields): [];
-            archivedFields.push({date: new Date(),field:archivedField});
-            localStorage.setItem('archive',JSON.stringify(archivedFields));    
+            const archivedFields = storedArchivedFields ? JSON.parse(storedArchivedFields) : [];
+            archivedFields.push({ date: new Date(), field: archivedField });
+            localStorage.setItem('archive', JSON.stringify(archivedFields));
         }
 
         props.setFields([
@@ -118,7 +118,7 @@ const ExtendableTextList = (props: Props) => {
         ]);
         setFields([
             ...fields.slice(0, index),
-            ...fields.slice(index + 1, fields.length)           
+            ...fields.slice(index + 1, fields.length)
         ])
     }
 
@@ -144,10 +144,10 @@ const ExtendableTextList = (props: Props) => {
         return checker;
     }
 
-    const moveIndent = (from: number, to: number):Array<Field> => {
+    const moveIndent = (from: number, to: number): Array<Field> => {
         let updatedFields = fields;
         for (let index = to; index >= from; index--) {
-            updatedFields = [... moveIt(index, updatedFields)];
+            updatedFields = [...moveIt(index, updatedFields)];
         }
         return updatedFields;
     }
@@ -158,16 +158,16 @@ const ExtendableTextList = (props: Props) => {
             ...currentFields.slice(0, index),
             ...currentFields.slice(index + 1, fields.length)
         ];
-        props.setFields([... updatedFields]);
+        props.setFields([...updatedFields]);
         props.next(move);
         return updatedFields;
     }
 
     const tomorrow = (index: number) => {
         const lastIndex = lastIndexIndented(index);
-        const newFields = (lastIndex == index)? moveIt(index, fields):moveIndent(index, lastIndex);
-        const reindexed = newFields.map((f:Field, id:number)=> {f.id = id; return f} );
-        setFields([... reindexed]);
+        const newFields = (lastIndex == index) ? moveIt(index, fields) : moveIndent(index, lastIndex);
+        const reindexed = newFields.map((f: Field, id: number) => { f.id = id; return f });
+        setFields([...reindexed]);
     }
 
     const indent = (id: number, tabs: number) => {
@@ -175,10 +175,10 @@ const ExtendableTextList = (props: Props) => {
     }
 
     const iColours = new Map([
-        [1,'bg-blue-100'],
-        [2,'bg-red-100'],
-        [3,'bg-yellow-100'],
-        [4,'bg-blue-200']
+        [1, 'bg-blue-100'],
+        [2, 'bg-red-100'],
+        [3, 'bg-yellow-100'],
+        [4, 'bg-blue-200']
     ]);
 
     const indentColour = (field: Field): string => {
@@ -204,12 +204,14 @@ const ExtendableTextList = (props: Props) => {
                 onDragStart={handleDragStart}
             >
                 <SortableContext items={fields} strategy={rectSortingStrategy}>
-                    {fields.map((field: Field, index: number) => (
-                        <div className={indentColour(field)} key={index}>
-                            <SortableItem onIndent={(i: number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
-                                onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
-                            />
-                        </div>))}
+                    <ul>
+                        {fields.map((field: Field, index: number) => (
+                            <li className={indentColour(field)} key={index}>
+                                <SortableItem onIndent={(i: number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
+                                    onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
+                                />
+                            </li>))}
+                    </ul>
                     <DragOverlay>
                         {activeId ? (
                             <div className="w-10/12 bg-green-100 border-2 outline outline-blue h-10">
