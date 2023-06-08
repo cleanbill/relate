@@ -83,7 +83,7 @@ const SortableItem = (props: Props) => {
         {props.indent > 0 && <button onClick={() => unindent()} title='unindent' className="butt-colour w-5 h-6 mr-4 rounded-lg text-sm ">-</button>}
       </div>
       <span>
-      {indents.map((t,i) => <span key={i}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>)}
+        {indents.map((t,i) => <span key={i}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>)}
       <input ref={valueRef} name={field} title={'field ' + props.id} id={'input-' + props.id} className='lg:w-96 sg:w-40 h-7' onKeyUp={keyup}
         onChange={e => props?.onChange(props.id, e.target.value)}
         type='text' ></input>

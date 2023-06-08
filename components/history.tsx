@@ -41,12 +41,13 @@ const History = (props: HistoryProps) => {
     }
 
 
-    const getIndents = (field: Field) => {
+    const getValueAndIndents = (field: Field) => {
         const indents = [];
         for (let i = 0; i < field.indent; i++) {
-            indents.push('\t');
+            indents.push('>');
         }
-        return indents;
+        indents.push(' '+field.value);
+        return indents.join('');
     }
 
 
@@ -58,24 +59,23 @@ const History = (props: HistoryProps) => {
                 && props.titleData.sessions['single'].fields[0].list.map((field: Field, index: number) => (
                     <div className="w-100 mt-4 text-left" key={index}>
 
-                        <div className="grid grid-cols-[11fr,1fr] h-4">
+                        <div className="grid grid-cols-[11fr,1fr] w-full">
                             <span>
-                                {getIndents(field).map((t,i) => <div key={i}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>)}
-                                <button onClick={() => show('single')} className="whitespace-nowrap text-left h-10">{field.value}</button>
+                                
+                                <button onClick={() => show('single')}>
+                                    <p className=" w-52 text-left text-ellipsis">{getValueAndIndents(field)}</p>
+                                </button>
                             </span>
-                            <button onClick={() => del('single')} className="butt mb-10 w-6 h-5 bg-blue-100">X</button>
+                            <button onClick={() => del('single')} className="butt mb-10 w-6 h-5 bg-blue-100 left-11">X</button>
                         </div>
                     </div>
                 ))}
-            {!props.titleData.singleton && state?.keys && state.keys.map((key: string, i:number) => (
-                <div className="w-100 mt-4" key={i}>
+            <div className="grid grid-cols-[11fr,1fr] h-4">
+                {!props.titleData.singleton && state?.keys && state.keys.map((key: string, i: number) => (
 
-                    <div className="grid grid-cols-[11fr,1fr] h-4">
-                        <button onClick={() => show(key)} className="whitespace-nowrap h-10">{showDate(key)}</button>
-                        {/* <button onClick={() => del(key)} className="butt mb-10 w-6 h-5 bg-red-400">X</button> */}
-                    </div>
-                </div>
-            ))}
+                    <button key={i} onClick={() => show(key)} className="whitespace-nowrap h-10">{showDate(key)}</button>
+                ))}
+            </div>
         </div>
     )
 }

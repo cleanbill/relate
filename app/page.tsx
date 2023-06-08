@@ -236,7 +236,7 @@ const Home = () => {
                             toggleShow={() => changeLayout(false)}
                         ></Groups>
                     </a>}
-                    {!showGroup && <a className="blocked">
+                    {!showGroup && <a className="blocked w-10">
                         <button className="ml-1" onClick={() => changeLayout(true)}><b>G</b></button>
                     </a>}
                 </div>
