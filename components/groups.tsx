@@ -10,6 +10,14 @@ interface GroupsProps {
     toggleShow: Function
 };
 
+export const stepArray = (titles: Array<TitleData>, index:number): Array<TitleData> => {
+    if (titles.length == 0) {
+        return titles;
+    }
+    const newOne = new Array<TitleData>();
+    return titles.slice(index).concat(titles.slice(0, index))
+}
+
 const Groups = (props: GroupsProps) => {
 
     const [state, setState] = useState({ groups: props.groups, selectedTitle: "", selectedGroup: null } as GroupsState);
@@ -25,7 +33,7 @@ const Groups = (props: GroupsProps) => {
             titles.findIndex((td: TitleData) => titleName.indexOf(td.titleName) > -1 || td.titleName.indexOf(titleName) > -1);
         if (titleIndex > -1) {
             titles[titleIndex].titleName = titleName;
-            return titles;
+            return stepArray(titles, titleIndex);
         }
         const newTitle: TitleData = {
             titleName,
@@ -150,11 +158,28 @@ const Groups = (props: GroupsProps) => {
             <div className="font-normal text-gray-700 dark:text-gray-400">
                 {state.groups.map((gd: GroupData, index: number) => (
                     gd && <div key={index}>
-                        <div onClick={() => toggle(index)} className="flex items-center justify-between w-full font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-10">
+                        <div onClick={() => toggle(index)} className="flex items-center justify-between w-full font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 <dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-10">
                             <span className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName}
                                 <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>
                             </span>
                         </div>
+                        {gd.groupName == 'todo' && <ul className="flex list-none">
+                            <li className="tab">
+                                <button onClick={() => selectTitle(gd, "Monday")}>Mo</button>
+                            </li>
+                            <li className="tab">
+                                <button onClick={() => selectTitle(gd, "Tuesday")}>Tu</button>
+                            </li>
+                            <li className="tab">
+                                <button onClick={() => selectTitle(gd, "Wednesday")}>We</button>
+                            </li>
+                            <li className="tab">
+                                <button onClick={() => selectTitle(gd, "Thursday")}>Th</button>
+                            </li>
+                            <li className="tab">
+                                <button onClick={() => selectTitle(gd, "Friday")}>Fr</button>
+                            </li>
+                        </ul>}
                         {gd.display &&
                             gd.titles.map((titleData: TitleData, i: number) => (
 
@@ -181,5 +206,6 @@ const Groups = (props: GroupsProps) => {
     )
 
 }
+
 
 export default Groups;
