@@ -15,7 +15,19 @@ export const stepArray = (titles: Array<TitleData>, index:number): Array<TitleDa
         return titles;
     }
     const newOne = new Array<TitleData>();
+    
     return titles.slice(index).concat(titles.slice(0, index))
+}
+
+
+const changeLayout = (titles: Array<TitleData>, index:number) => {
+    const doc: any = document;
+    if (!doc.startViewTransition) {
+        console.warn("No view transistion");
+        stepArray(titles, index)
+    } else {
+        doc.startViewTransition(() => stepArray(titles, index));
+    }
 }
 
 const Groups = (props: GroupsProps) => {
@@ -33,7 +45,7 @@ const Groups = (props: GroupsProps) => {
             titles.findIndex((td: TitleData) => titleName.indexOf(td.titleName) > -1 || td.titleName.indexOf(titleName) > -1);
         if (titleIndex > -1) {
             titles[titleIndex].titleName = titleName;
-            return stepArray(titles, titleIndex);
+            return stepArray(titles,titleIndex);
         }
         const newTitle: TitleData = {
             titleName,

@@ -59,8 +59,8 @@ const History = (props: HistoryProps) => {
                 && props.titleData.sessions['single'].fields[0].list.map((field: Field, index: number) => (
                     <div className="w-100 mt-4 text-left" key={index}>
 
-                        <div className="grid grid-cols-[11fr,1fr] w-full">
-                            <span>
+                        <div className="grid grid-cols-[11fr,1fr] w-full h-3">
+                            <span >
                                 
                                 <button onClick={() => show('single')}>
                                     <p className=" w-52 text-left text-ellipsis">{getValueAndIndents(field)}</p>
