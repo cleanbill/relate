@@ -10,23 +10,22 @@ interface GroupsProps {
     toggleShow: Function
 };
 
-export const stepArray = (titles: Array<TitleData>, index:number): Array<TitleData> => {
+export const stepArray = (titles: Array<TitleData>, index: number): Array<TitleData> => {
     if (titles.length == 0) {
         return titles;
     }
-    const newOne = new Array<TitleData>();
-    
     return titles.slice(index).concat(titles.slice(0, index))
 }
 
 
-const changeLayout = (titles: Array<TitleData>, index:number) => {
+const changeLayout = (titles: Array<TitleData>, index: number) => {
     const doc: any = document;
+    const nextIndex: number = index + 1 == titles.length? 0 : index +1;
     if (!doc.startViewTransition) {
         console.warn("No view transistion");
-        stepArray(titles, index)
+        stepArray(titles, nextIndex)
     } else {
-        doc.startViewTransition(() => stepArray(titles, index));
+        doc.startViewTransition(() => stepArray(titles, nextIndex));
     }
 }
 
@@ -45,7 +44,8 @@ const Groups = (props: GroupsProps) => {
             titles.findIndex((td: TitleData) => titleName.indexOf(td.titleName) > -1 || td.titleName.indexOf(titleName) > -1);
         if (titleIndex > -1) {
             titles[titleIndex].titleName = titleName;
-            return stepArray(titles,titleIndex);
+            const nextIndex: number = titleIndex + 1 == titles.length? 0 : titleIndex +1;
+            return stepArray(titles, nextIndex);
         }
         const newTitle: TitleData = {
             titleName,
@@ -172,7 +172,7 @@ const Groups = (props: GroupsProps) => {
                     gd && <div key={index}>
                         <div onClick={() => toggle(index)} className="flex items-center justify-between w-full font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 <dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-10">
                             <span onClick={() => toggle(index)} className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName}
-                                <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>
+                                {gd.groupName == 'todo' && <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>}
                             </span>
                         </div>
                         {gd.groupName == 'todo' && <ul className="flex list-none">
