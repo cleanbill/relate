@@ -171,7 +171,7 @@ const Groups = (props: GroupsProps) => {
                 {state.groups.map((gd: GroupData, index: number) => (
                     gd && <div key={index}>
                         <div onClick={() => toggle(index)} className="flex items-center justify-between w-full font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 <dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-10">
-                            <span className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName}
+                            <span onClick={() => toggle(index)} className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName}
                                 <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>
                             </span>
                         </div>

@@ -63,7 +63,7 @@ const History = (props: HistoryProps) => {
                             <span >
                                 
                                 <button onClick={() => show('single')}>
-                                    <p className=" w-52 text-left text-ellipsis">{getValueAndIndents(field)}</p>
+                                    <p className="w-auto text-left text-ellipsis">{getValueAndIndents(field)}</p>
                                 </button>
                             </span>
                             <button onClick={() => del('single')} className="butt mb-10 w-6 h-5 bg-blue-100 left-11">X</button>
