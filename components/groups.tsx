@@ -34,18 +34,19 @@ const Groups = (props: GroupsProps) => {
     const [state, setState] = useState({ groups: props.groups, selectedTitle: "", selectedGroup: null } as GroupsState);
     const [show, setShow] = useState(true);
 
+
     useEffect(() => {
         const groups = updateGroups(props.groups, props.selectedGroup, props.selectedTitle);
         setState({ groups, selectedTitle: props.selectedTitle, selectedGroup: props.selectedGroup });
     }, [props]);
 
-    const updateTitle = (titles: Array<TitleData>, titleName: string) => {
+    const updateTitle = (titles: Array<TitleData>, titleName: string, shuffle = true) => {
         const titleIndex = titles.length == 1 && !titles[0].titleName ? 0 :
             titles.findIndex((td: TitleData) => titleName.indexOf(td.titleName) > -1 || td.titleName.indexOf(titleName) > -1);
         if (titleIndex > -1) {
             titles[titleIndex].titleName = titleName;
             const nextIndex: number = titleIndex + 1 == titles.length? 0 : titleIndex +1;
-            return stepArray(titles, nextIndex);
+            return shuffle? stepArray(titles, nextIndex): titles;
         }
         const newTitle: TitleData = {
             titleName,
@@ -60,6 +61,7 @@ const Groups = (props: GroupsProps) => {
         if (!groupName) {
             return groups;
         }
+        window.scrollTo(0,0);
         const group = groups.find((gp: GroupData) => (props.selectedGroup && props.selectedGroup.indexOf(gp.groupName) > -1));
         if (groupName.length == 1 && group == undefined) {
             const newGroup = generateGroup(groupName, titleName);
@@ -74,7 +76,7 @@ const Groups = (props: GroupsProps) => {
         if (group.titles.length > 0 && (!selectTitle || !titleName)) {
             return groups;
         }
-        group.titles = updateTitle(group.titles, titleName);
+        group.titles = updateTitle(group.titles, titleName, groupName == 'todo');
         const newGroups = groups.map((gd: GroupData) => (group.groupName == gd.groupName) ? group : gd);
         return newGroups;
     }
@@ -133,6 +135,7 @@ const Groups = (props: GroupsProps) => {
             grp.display = (i == index) ? !grp.display : grp.display;
             return grp;
         });
+
         console.log('toggle');
         setState(old => ({ groups, selectedTitle: old.selectedTitle, selectedGroup: old.selectedGroup }));
     }
@@ -170,11 +173,16 @@ const Groups = (props: GroupsProps) => {
             <div className="font-normal text-gray-700 dark:text-gray-400">
                 {state.groups.map((gd: GroupData, index: number) => (
                     gd && <div key={index}>
-                        <div onClick={() => toggle(index)} className="flex items-center justify-between w-full font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 <dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-10">
+                        {gd.groupName != 'todo' && <div onClick={() => toggle(index)} className="tabhead">
                             <span onClick={() => toggle(index)} className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName}
-                                {gd.groupName != 'todo' && <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>}
+                                <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>
                             </span>
-                        </div>
+                        </div>}
+                        {gd.groupName == 'todo' && <div onClick={() => toggle(index)} className="tabhead">
+                            <span onClick={() => toggle(index)} className='pl-4 text-stone-700'>{gd.groupName}
+                            </span>
+                        </div>}
+                        {/* This should be a component that can work from page when minimized group?  */}
                         {gd.groupName == 'todo' && <ul className="flex list-none">
                             <li className="tab">
                                 <button onClick={() => selectTitle(gd, "Monday")}>Mo</button>
@@ -199,8 +207,7 @@ const Groups = (props: GroupsProps) => {
                                     <div className="mb-2 text-gray-500 dark:text-gray-400">
                                         {titleData.titleName == state.selectedTitle && (<span></span>)}
                                         <span className={titleData.titleName == state.selectedTitle ? 'font-bold' : ""} onClick={() => selectTitle(gd, titleData.titleName)}>{i + 1} . {titleData.titleName} </span>
-                                        <button onClick={() => deleteTitle(index, titleData.titleName)} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">X</button>
-
+                                        {gd.groupName != 'todo' && <button onClick={() => deleteTitle(index, titleData.titleName)} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">X</button>}
                                         {showHistory(titleData) && (
                                             <History
                                                 titleData={titleData}

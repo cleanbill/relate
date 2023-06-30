@@ -1,7 +1,7 @@
 import './global.css';
-import { Comic_Neue } from '@next/font/google'
+import { Saira } from '@next/font/google'
 
- const font = Comic_Neue({
+ const font = Saira({
    subsets: ['latin'],
    weight: '300'
  })

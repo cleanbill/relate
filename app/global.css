@@ -20,6 +20,10 @@
         @apply  w-1/5 self-center justify-center text-center font-medium border border-t-0 border-gray-200 rounded-b-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-6
     }
 
+    .tabhead {
+        @apply flex items-center justify-between w-full font-medium text-left border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 hover:bg-blue-400 dark:hover:bg-gray-800 bg-blue-300 dark:bg-gray-800 text-gray-900 dark:text-white p-0 h-10
+    }
+
 }
 
 ln:nth-child(1){
