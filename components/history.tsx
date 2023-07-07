@@ -78,7 +78,7 @@ const History = (props: HistoryProps) => {
     return (
         <div >
             {list.map((field: Field, index: number) => (
-                <div className="w-100 mt-4 text-left" key={index}>
+                <div className="w-100 mt-4 text-left h-auto" key={index}>
 
                     <div className="grid grid-cols-[11fr,1fr] w-full h-3">
 

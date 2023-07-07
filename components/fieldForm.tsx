@@ -95,6 +95,7 @@ const FieldForm = (props: FieldFormProps) => {
                                 <label title={field.value} className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">{field.fieldName} </label>
                                 {field.fieldComponentType == FieldComponentType.NONE &&
                                     <input onChange={e => props.updateFieldData(index, e.target)}
+                                        key={"fieldData-" + index}
                                         id={"fieldData-" + index}
                                         defaultValue={field.value}
                                         type={field.fieldType}
