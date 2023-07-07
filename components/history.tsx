@@ -80,7 +80,7 @@ const History = (props: HistoryProps) => {
             {list.map((field: Field, index: number) => (
                 <div className="w-100 mt-4 text-left h-auto" key={index}>
 
-                    <div className="grid grid-cols-[11fr,1fr] w-full h-3">
+                    <div className="grid grid-cols-[11fr,1fr] w-full h-auto">
 
                         <button onClick={() => show(singleKey)}>
                             <p className="text-left text-ellipsis">{getValueAndIndents(field)}</p>
