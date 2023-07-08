@@ -37,7 +37,7 @@ const Happy = (props: HappyProps) => {
 
     const choose = (index: number) => {
         setSelectedIndex(() => index);
-        props.onChange(index);
+        props.onChange({ type: 'happy', value: index });
     }
     useEffect(() => {
         const index = determineValue(props.defaultValue);
@@ -46,19 +46,22 @@ const Happy = (props: HappyProps) => {
 
     return (
         <>
-            <ul className="mt-4 pl-3 grid grid-cols-3">
-                {[1, 2, 3, 4, 5, 7, 8, 9, 10].map((index: number) => (
-                    <li className=""
-                        key={index}
-                        onMouseEnter={() => setHoveringIndex(index)}
-                        onMouseLeave={() => setHoveringIndex(-1)}
-                        onMouseUp={() => index == selectedIndex ? choose(0) : choose(index)}
-                    >
-                        <span className={index < 10 ? 'pl-2' : 'pl-1'}>{index}</span>
-                        <Face selected={isSelected({ index, hoveringIndex, selectedIndex })}></Face>
-                    </li>
-                ))}
-            </ul>
+            <div className="grid grid-cols-[11fr,1fr]">
+                <ul className="mt-4 pl-3 grid grid-cols-3">
+                    {[1, 2, 3, 4, 5, 7, 8, 9, 10].map((index: number) => (
+                        <li className=""
+                            key={index}
+                            onMouseEnter={() => setHoveringIndex(index)}
+                            onMouseLeave={() => setHoveringIndex(-1)}
+                            onMouseUp={() => index == selectedIndex ? choose(0) : choose(index)}
+                        >
+                            <span className={index < 10 ? 'pl-2' : 'pl-1'}>{index}</span>
+                            <Face selected={isSelected({ index, hoveringIndex, selectedIndex })}></Face>
+                        </li>
+                    ))}
+                </ul>
+                <div className="text-centre text-9xl self-center">{selectedIndex}</div>
+            </div>
             <input type='hidden' id={props.id} value={selectedIndex} ></input>
         </>)
 }
