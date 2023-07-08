@@ -89,7 +89,7 @@ const History = (props: HistoryProps) => {
                     </div>
                 </div>
             ))}
-            <div className="h-4 grid grid-cols-1 ">
+            <div className="h-auto grid grid-cols-1 ">
                 {!props.titleData.singleton && state?.keys && state.keys.map((key: string, i: number) => (
                     <button key={i} onClick={() => show(key)} className="whitespace-nowrap h-10 text-left">{showDate(key)}</button>
                 ))}

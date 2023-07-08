@@ -241,8 +241,6 @@ const Home = () => {
                     </a>}
                 </div>
 
-                {/* <SpinWheel></SpinWheel> */}
-
                 <div className='col-span-2 align-top '>
                     {fields.length > 0 && <a className="blocked">
                         <FieldForm

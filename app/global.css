@@ -13,7 +13,7 @@
     }
 
     .blocked {
-        @apply m-5 block p-2 hover:bg-white rounded-lg border border-gray-200 shadow-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700
+        @apply m-5 block p-2 hover:bg-white rounded-lg border border-gray-200 shadow-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 h-auto
     }
     
     .tab {
