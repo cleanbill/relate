@@ -44,7 +44,6 @@ const History = (props: HistoryProps) => {
         props.updateTitleData(key);
     }
 
-
     const getValueAndIndents = (field: Field) => {
         const indents = [];
         for (let i = 0; i < field.indent; i++) {

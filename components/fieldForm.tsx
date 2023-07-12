@@ -96,6 +96,7 @@ const FieldForm = (props: FieldFormProps) => {
                                 {field.fieldComponentType == FieldComponentType.NONE &&
                                     <input onChange={e => props.updateFieldData(index, e.target)}
                                         key={"fieldData-" + index}
+                                        
                                         id={"fieldData-" + index}
                                         defaultValue={field.value}
                                         type={field.fieldType}

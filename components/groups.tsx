@@ -32,8 +32,6 @@ const changeLayout = (titles: Array<TitleData>, index: number) => {
 const Groups = (props: GroupsProps) => {
 
     const [state, setState] = useState({ groups: props.groups, selectedTitle: "", selectedGroup: null } as GroupsState);
-    const [show, setShow] = useState(true);
-
 
     useEffect(() => {
         const groups = updateGroups(props.groups, props.selectedGroup, props.selectedTitle);
@@ -57,11 +55,13 @@ const Groups = (props: GroupsProps) => {
         return titles;
     }
 
-    const updateGroups = (groups: GroupData[], groupName: string | null, titleName: string) => {
+    const updateGroups = (groups: GroupData[], groupName: string | null, titleName: string, scrollUp = true) => {
         if (!groupName) {
             return groups;
         }
-        window.scrollTo(0,0);
+        if (scrollUp){
+            window.scrollTo(0,0);
+        }
         const group = groups.find((gp: GroupData) => (props.selectedGroup && props.selectedGroup.indexOf(gp.groupName) > -1));
         if (groupName.length == 1 && group == undefined) {
             const newGroup = generateGroup(groupName, titleName);
@@ -174,12 +174,12 @@ const Groups = (props: GroupsProps) => {
                 {state.groups.map((gd: GroupData, index: number) => (
                     gd && <div key={index}>
                         {gd.groupName != 'todo' && <div onClick={() => toggle(index)} className="tabhead">
-                            <span onClick={() => toggle(index)} className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName}
+                            <span title={"A group of "+gd.titles.length+""} onClick={() => toggle(index)} className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName} 
                                 <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>
                             </span>
                         </div>}
                         {gd.groupName == 'todo' && <div onClick={() => toggle(index)} className="tabhead">
-                            <span onClick={() => toggle(index)} className='pl-4 text-stone-700'>{gd.groupName}
+                            <span onClick={() => toggle(index)} className='pl-4 text-stone-700'>{gd.groupName} 
                             </span>
                         </div>}
                         {/* This should be a component that can work from page when minimized group?  */}

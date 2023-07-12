@@ -221,7 +221,6 @@ const ExtendableTextList = (props: Props) => {
                     </DragOverlay>
                 </SortableContext>
             </DndContext>
-
             <button onClick={() => add()} className="butt w-full h-7">ADD</button>
         </>
     );

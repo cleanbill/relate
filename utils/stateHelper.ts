@@ -1,4 +1,3 @@
-import { group } from "d3";
 import { Field, FieldComponentType, FieldType, GroupData, Session, TitleData } from "../app/model";
 
 const json = (text: string): any => {
@@ -24,6 +23,18 @@ function establish<T>(
     setter(defaultValue);
     return defaultValue;
   }
+}
+
+const getGroupDataList = (): Array<GroupData> =>{
+  const stored = localStorage.getItem("groups");
+  try {
+    const place = stored ? json(stored) : new Array<GroupData>();
+    return place;
+  } catch (error) {
+    console.error(error, stored);
+    return new Array<GroupData>();
+  }
+
 }
 
 const getTitleData = (
@@ -155,4 +166,4 @@ const createTodoGroup = (): GroupData => {
   return groupData;
 }
 
-export { establish, getTitleData, exportData, importData, getMark, createNewGroup, createTitleData, isSingleton, getComponentType, fillInComponentType, createTodoGroup };
+export { establish, getGroupDataList, getTitleData, exportData, importData, getMark, createNewGroup, createTitleData, isSingleton, getComponentType, fillInComponentType, createTodoGroup };
