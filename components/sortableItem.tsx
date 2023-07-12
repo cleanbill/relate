@@ -103,7 +103,7 @@ const SortableItem = (props: Props) => {
 
       </span>
 
-
+      {/* @ts-ignore */}
       <div className="bg-blue-400 shadow-lg rounded-lg w-6/12" id={"jumpto-popover" + props.id} popover="true">
         <div className="border border-solid h-10m-5 block p-2 hover:bg-white rounded-lg border border-gray-200 shadow-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <p>
@@ -111,6 +111,7 @@ const SortableItem = (props: Props) => {
             <div className="grid grid-cols-[12fr,0fr]">
 
               <div className="ml-1">Moved to....</div>
+              {/* @ts-ignore */}
               <button className="butt inline float-right align-top m-0.5 w-6 h-5 bg-blue-100" popovertarget={"jumpto-popover" + props.id} popovertargetaction="hide">
                 <span aria-hidden="true">x</span>
                 <span className="sr-only">Close</span>
@@ -118,10 +119,10 @@ const SortableItem = (props: Props) => {
               </div>
             </h1>
             {getGroupDataList().map((gd:GroupData, gdIndex:number) =>(
-              <div>
+              <div key={gd.groupName}>
                 <h3><b>{gd.groupName}</b></h3>
                 {gd.titles.map((td:TitleData, tdIndex:number) => (
-                  <h4 className="ml-4">
+                  <h4 key='tdIndex' className="ml-4">
                     <div className="grid grid-cols-[0fr,12fr]">
                           <div >{td.titleName}</div>
                           <div className="text-end">
@@ -139,6 +140,7 @@ const SortableItem = (props: Props) => {
         </div>
       </div>
 
+      {/* @ts-ignore */}
       <button popovertarget={"jumpto-popover" + props.id} title="Jump to another list" className="ml-3 justify-self-end text-white bg-blue-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-6 h-6 sg:mr-1.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 ">»</button>
 
 
