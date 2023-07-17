@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import { useEffect } from "react";
 import { GroupData, TitleData } from "../app/model";
-import History from '../components/history';
+import GroupTitle from "./groupTitle";
+import TodoGroup from "./todoGroups";
 
 interface GroupsState { groups: Array<GroupData>, selectedTitle: string, selectedGroup: string | null };
 interface GroupsProps {
@@ -20,7 +21,7 @@ export const stepArray = (titles: Array<TitleData>, index: number): Array<TitleD
 
 const changeLayout = (titles: Array<TitleData>, index: number) => {
     const doc: any = document;
-    const nextIndex: number = index + 1 == titles.length? 0 : index +1;
+    const nextIndex: number = index + 1 == titles.length ? 0 : index + 1;
     if (!doc.startViewTransition) {
         console.warn("No view transistion");
         stepArray(titles, nextIndex)
@@ -29,12 +30,24 @@ const changeLayout = (titles: Array<TitleData>, index: number) => {
     }
 }
 
+const determineScroll = (state:any,props:GroupsProps) =>{
+    if (!props.selectedTitle || !props.selectedGroup ||
+        !state.selectedTitle || !state.selectedGroup){
+        return false;
+    }
+    if (props.selectedTitle.indexOf(state.selectedTitle) > -1){
+        return false;
+    }
+    return state.selectedGroup != props.selectedGroup || state.selectedTitle != props.selectedTitle;
+}
+
 const Groups = (props: GroupsProps) => {
 
     const [state, setState] = useState({ groups: props.groups, selectedTitle: "", selectedGroup: null } as GroupsState);
 
     useEffect(() => {
-        const groups = updateGroups(props.groups, props.selectedGroup, props.selectedTitle);
+        const scroll = determineScroll(state,props);
+        const groups = updateGroups(props.groups, props.selectedGroup, props.selectedTitle, scroll);
         setState({ groups, selectedTitle: props.selectedTitle, selectedGroup: props.selectedGroup });
     }, [props]);
 
@@ -43,8 +56,8 @@ const Groups = (props: GroupsProps) => {
             titles.findIndex((td: TitleData) => titleName.indexOf(td.titleName) > -1 || td.titleName.indexOf(titleName) > -1);
         if (titleIndex > -1) {
             titles[titleIndex].titleName = titleName;
-            const nextIndex: number = titleIndex + 1 == titles.length? 0 : titleIndex +1;
-            return shuffle? stepArray(titles, nextIndex): titles;
+            const nextIndex: number = titleIndex + 1 == titles.length ? 0 : titleIndex + 1;
+            return shuffle ? stepArray(titles, nextIndex) : titles;
         }
         const newTitle: TitleData = {
             titleName,
@@ -59,14 +72,14 @@ const Groups = (props: GroupsProps) => {
         if (!groupName) {
             return groups;
         }
-        if (scrollUp){
-            window.scrollTo(0,0);
+        if (scrollUp) {
+            window.scrollTo(0, 0);
         }
         const group = groups.find((gp: GroupData) => (props.selectedGroup && props.selectedGroup.indexOf(gp.groupName) > -1));
         if (groupName.length == 1 && group == undefined) {
             const newGroup = generateGroup(groupName, titleName);
             groups.push(newGroup);
-            toggle(groups.length - 1);
+            toggle(groups.length - 1,null);
             return groups;
         }
         if (group == undefined) {
@@ -130,7 +143,8 @@ const Groups = (props: GroupsProps) => {
         setState(old => ({ groups, selectedTitle: newSelectedTitle, selectedGroup: old.selectedGroup }));
     }
 
-    const toggle = (index: number): void => {
+    const toggle = (index: number,e:null|Event): void => {
+        e?.stopPropagation(); 
         const groups = state.groups.map((grp: GroupData, i: number) => {
             grp.display = (i == index) ? !grp.display : grp.display;
             return grp;
@@ -161,8 +175,6 @@ const Groups = (props: GroupsProps) => {
         return false;
     }
 
-    const baseClass = "p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-blue-300";
-
     return (
         <>
             <h5 className=" mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white ">
@@ -172,52 +184,33 @@ const Groups = (props: GroupsProps) => {
             </h5>
             <div className="font-normal text-gray-700 dark:text-gray-400">
                 {state.groups.map((gd: GroupData, index: number) => (
-                    gd && <div key={index}>
-                        {gd.groupName != 'todo' && <div onClick={() => toggle(index)} className="tabhead">
-                            <span title={"A group of "+gd.titles.length+""} onClick={() => toggle(index)} className={gd.display ? 'text-white w-full pt-14 pl-3' : 'text-stone-700 w-full pt-14 pl-3'}>{gd.groupName} 
-                                <button onClick={() => deleteGroup(index)} className="z-10 float-right butt mb-16 w-6 h-5 bg-blue-100">X</button>
-                            </span>
-                        </div>}
-                        {gd.groupName == 'todo' && <div onClick={() => toggle(index)} className="tabhead">
-                            <span onClick={() => toggle(index)} className='pl-4 text-stone-700'>{gd.groupName} 
-                            </span>
-                        </div>}
-                        {/* This should be a component that can work from page when minimized group?  */}
-                        {gd.groupName == 'todo' && <ul className="flex list-none">
-                            <li className="tab">
-                                <button onClick={() => selectTitle(gd, "Monday")}>Mo</button>
-                            </li>
-                            <li className="tab">
-                                <button onClick={() => selectTitle(gd, "Tuesday")}>Tu</button>
-                            </li>
-                            <li className="tab">
-                                <button onClick={() => selectTitle(gd, "Wednesday")}>We</button>
-                            </li>
-                            <li className="tab">
-                                <button onClick={() => selectTitle(gd, "Thursday")}>Th</button>
-                            </li>
-                            <li className="tab">
-                                <button onClick={() => selectTitle(gd, "Friday")}>Fr</button>
-                            </li>
-                        </ul>}
-                        {gd.display &&
-                            gd.titles.map((titleData: TitleData, i: number) => (
+                    gd && 
+                        <div key={index}>
+                        
+                            {gd.groupName != 'todo' && 
+                                <div  className="tabhead">
+                                    <span title={gd.groupName+ " group has " + gd.titles.length + " titles"} onClick={(e:any) => toggle(index,e)} className='text-stone-700 w-full pt-1 pl-3'>{gd.groupName}
+                                    <button title={'Delete '+gd.groupName} className="float-right mr-4 bg-white rounded-xl w-8 " onClick={() => deleteGroup(index)}>X</button>
+                                    </span>
+                                </div>}
+                        
+                            {gd.groupName == 'todo' &&
+                                <TodoGroup toggle={(e:MouseEvent) => toggle(index,e)} selectTitle={(day: string) => selectTitle(gd, day)}/>}
 
-                                <div key={titleData.titleName} id={'selected-' + i} className={baseClass} >
-                                    <div className="mb-2 text-gray-500 dark:text-gray-400">
-                                        {titleData.titleName == state.selectedTitle && (<span></span>)}
-                                        <span className={titleData.titleName == state.selectedTitle ? 'font-bold' : ""} onClick={() => selectTitle(gd, titleData.titleName)}>{i + 1} . {titleData.titleName} </span>
-                                        {gd.groupName != 'todo' && <button onClick={() => deleteTitle(index, titleData.titleName)} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">X</button>}
-                                        {showHistory(titleData) && (
-                                            <History
-                                                titleData={titleData}
-                                                overrideFields={props.overrideFields}
-                                                updateTitleData={props.updateTitleData} ></History>
-                                        )}
-                                    </div>
-                                </div>
-                            ))
-                        }
+                            {gd.display &&
+                                gd.titles.map((titleData: TitleData, i: number) => (
+                                    <GroupTitle
+                                    key={i}
+                                        titleData={titleData}
+                                        deletable={gd.groupName != 'todo'}
+                                        selectTitle={() => selectTitle(gd, titleData.titleName)}
+                                        showHistory={showHistory(titleData)}
+                                        overrideFields={() => props.overrideFields()}
+                                        updateTitleData={() => props.updateTitleData()}
+                                        deleteTitle={() => deleteTitle(index, titleData.titleName)}
+                                        i={i}
+                                        selected={titleData.titleName == state.selectedTitle} />
+                                ))}
                     </div>
                 ))}
             </div>
