@@ -68,7 +68,7 @@ const z = (n: number) => n < 10 ? "0" + n : n + "";
 const getMark = (includeMinutes = false) => {
   const now = new Date();
   const minutes = includeMinutes ? z(now.getMinutes()) : '00';
-  const mark = now.getFullYear() + "-" + z(now.getMonth()) + "-" + z(now.getDate()) + ":" + z(now.getHours()) + ':' + minutes;
+  const mark = now.getFullYear() + "-" + z(now.getMonth()+1) + "-" + z(now.getDate()) + ":" + z(now.getHours()) + ':' + minutes;
   return mark;
 }
 
@@ -91,21 +91,13 @@ const exportData = (groupDataList:Array<GroupData>) => {
 }
 
 const importData = async () => {
-  const filename = document.getElementById('export') as any;
-  filename?.click();
-  console.log(filename.files[0]);
-  // const formData = new FormData();
-
-  const file_reader = new FileReader();
-  file_reader.addEventListener("load", () => {
-      const uploaded = file_reader.result;
-      console.log('uploaded.....', uploaded);
-  });
-  file_reader.readAsDataURL(filename.files[0]);
-
-  // formData.append("savedData", filename.files[0]);
-  // const what = await fetch('', { method: "POST", body: formData });
-  // console.log(await what.json());
+  const dir = document.getElementById('importData') as any;
+  dir?.click();
+  const file = dir.files[0] as File;
+  console.log('data is ',file);
+  const content = await file.text();
+  localStorage.setItem('groups', content);
+  return content;
 }
 
 const isSingleton = (fds: Field[]) => fds[0]?.fieldComponentType == FieldComponentType.ETL;
@@ -140,7 +132,7 @@ const fillInComponentType = (field: Field): Field => {
   return field;
 }
 
-const createDayTitleData = (day: string): TitleData => {
+const createDayTitleData = (no: number,day: string): TitleData => {
   const titleName = day;
   const fields = new Array<Field>();
   const ETLField = {
@@ -151,16 +143,16 @@ const createDayTitleData = (day: string): TitleData => {
       list: Array<Field>()
   } as Field;
   fields.push(ETLField);
-  const session = { group: 'todo', title: day, mark: day, fields }
-  return { titleName, singleton: true, sessions: { 'single': session } }
+  const session = { no, group: 'todo', title: day, mark: day, fields }
+  return { titleName, singleton: true, sessions: { "single": session } }
 }
 
 const createTodoGroup = (): GroupData => {
-  const monday = createDayTitleData('Monday')
-  const tuesday = createDayTitleData('Tuesday')
-  const wednesday = createDayTitleData('Wednesday')
-  const thursday = createDayTitleData('Thursday')
-  const friday = createDayTitleData('Friday')
+  const monday = createDayTitleData(0,'Monday')
+  const tuesday = createDayTitleData(1,'Tuesday')
+  const wednesday = createDayTitleData(2,'Wednesday')
+  const thursday = createDayTitleData(3,'Thursday')
+  const friday = createDayTitleData(4,'Friday')
   const titles = [monday, tuesday, wednesday, thursday, friday];
   const groupData = { groupName: 'todo', titles, display: false };
   return groupData;

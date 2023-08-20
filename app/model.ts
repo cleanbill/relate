@@ -44,6 +44,7 @@ export type Field = {
 }
 
 export type Session = {
+    no: number,
     group: string,
     title: string,
     mark: string,

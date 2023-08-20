@@ -7,31 +7,27 @@ interface Props {
 
 const TodoGroup = (props: Props) => {
 
-    const toggle = (e:MouseEvent) =>{
-        props.toggle(e);
-    }
-
     return (
         <>
             <div onClick={() => props.toggle()} className="tabhead">
-                <span onClick={(e:any) => toggle(e)} className='pl-4 text-stone-700'>To do
+                <span  className='pl-4 text-stone-700'>To do
                 </span>
             </div>
             <ul className="flex list-none">
                 <li className="tab">
-                    <button onClick={() => props.selectTitle("Monday")}>Mo</button>
+                    <button onClick={() => props.selectTitle(0)}>Mo</button>
                 </li>
                 <li className="tab">
-                    <button onClick={() => props.selectTitle("Tuesday")}>Tu</button>
+                    <button onClick={() => props.selectTitle(1)}>Tu</button>
                 </li>
                 <li className="tab">
-                    <button onClick={() => props.selectTitle("Wednesday")}>We</button>
+                    <button onClick={() => props.selectTitle(2)}>We</button>
                 </li>
                 <li className="tab">
-                    <button onClick={() => props.selectTitle("Thursday")}>Th</button>
+                    <button onClick={() => props.selectTitle(3)}>Th</button>
                 </li>
                 <li className="tab">
-                    <button onClick={() => props.selectTitle("Friday")}>Fr</button>
+                    <button onClick={() => props.selectTitle(4)}>Fr</button>
                 </li>
             </ul>
         </>

@@ -11,9 +11,8 @@ const GroupTitle = (props: Props) => {
         <>
             <div key={props.titleData.titleName} id={'selected-' + props.i} className="p-5 font-light border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-blue-300" >
                 <div className="mb-2 text-gray-500 dark:text-gray-400">
-                    {props.selected && (<span></span>)}
-                    <span className={props.selected ? 'font-bold' : ""} onClick={() => props.selectTitle()}>{props.i + 1} . {props.titleData.titleName} </span>
-                    {props.deletable && <button onClick={() => props.deleteTitle()} className="z-10 float-right butt mb-10 w-6 h-5 bg-blue-100">X</button>}
+                    <span className={props.selected ? 'font-bold mr-4' : "mr-4"} onClick={() => props.selectTitle()}>{props.i + 1} . {props.titleData.titleName} </span>
+                    {props.deletable && <button onClick={() => props.deleteTitle()} className="z-10 butt mb-10 w-6 h-5 bg-blue-100">X</button>}
                     {props.showHistory && (
                         <History
                             titleData={props.titleData}

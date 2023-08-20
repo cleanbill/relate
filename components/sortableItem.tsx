@@ -4,16 +4,26 @@ import { getGroupDataList } from "../utils/stateHelper";
 import { GroupData, TitleData } from "../app/model";
 // import {getGroupDataList} from ''
 
+type DestinationFunction = {
+  (destination: Destination): void
+}
+
 type Props = {
   id: any,
   value: string,
   indent: number,
   handle: boolean,
   manana: Function,
+  move: DestinationFunction,
   onReturn: Function,
   onChange: Function,
   onIndent: Function,
   delete: Function
+}
+
+export type Destination = {
+  gid: number,
+  tdi: number
 }
 
 const SortableItem = (props: Props) => {
@@ -25,7 +35,7 @@ const SortableItem = (props: Props) => {
   } = useSortable({ id: props.id });
 
   const [field, setField] = useState(props.value);
-  const [moveTo, setMoveTo] = useState({gid:-1,tdi:-1});
+  const [moveTo, setMoveTo] = useState({ gid: -1, tdi: -1 } as Destination);
 
 
   useEffect(() => {
@@ -46,8 +56,11 @@ const SortableItem = (props: Props) => {
     props.onReturn();
   }
 
-  const jump = () => {
-    console.log('move to',moveTo);
+  const jump = (popupID:string) => {
+    console.log('move to', moveTo);
+    props.move(moveTo);
+    //@ts-ignore
+    document.getElementById(popupID).hidePopover();
   }
 
   const valueRef = (element: HTMLInputElement) => {
@@ -77,7 +90,7 @@ const SortableItem = (props: Props) => {
   const showIndent = (isNaN(props.indent) || props.indent < 4) && props.id > 0;
   const showManana = props.id == 0 || (isNaN(props.indent) || props.indent == 0);
 
-  const move = () =>{
+  const move = () => {
 
   }
 
@@ -108,33 +121,33 @@ const SortableItem = (props: Props) => {
         <div className="border border-solid h-10m-5 block p-2 hover:bg-white rounded-lg border border-gray-200 shadow-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <p>
             <h1 className="bg-blue-400 text-white">
-            <div className="grid grid-cols-[12fr,0fr]">
+              <div className="grid grid-cols-[12fr,0fr]">
 
-              <div className="ml-1">Moved to....</div>
-              {/* @ts-ignore */}
-              <button className="butt inline float-right align-top m-0.5 w-6 h-5 bg-blue-100" popovertarget={"jumpto-popover" + props.id} popovertargetaction="hide">
-                <span aria-hidden="true">x</span>
-                <span className="sr-only">Close</span>
-              </button>
+                <div className="ml-1">Moved to....</div>
+                {/* @ts-ignore */}
+                <button className="butt inline float-right align-top m-0.5 w-6 h-5 bg-blue-100" popovertarget={"jumpto-popover" + props.id} popovertargetaction="hide">
+                  <span aria-hidden="true">x</span>
+                  <span className="sr-only">Close</span>
+                </button>
               </div>
             </h1>
-            {getGroupDataList().map((gd:GroupData, gdIndex:number) =>(
+            {getGroupDataList().map((gd: GroupData, gdIndex: number) => (
               <div key={gd.groupName}>
                 <h3><b>{gd.groupName}</b></h3>
-                {gd.titles.map((td:TitleData, tdIndex:number) => (
-                  <h4 key='tdIndex' className="ml-4">
+                {gd.titles.map((td: TitleData, tdIndex: number) => (
+                  <h4 key={tdIndex} className="ml-4">
                     <div className="grid grid-cols-[0fr,12fr]">
-                          <div >{td.titleName}</div>
-                          <div className="text-end">
-                          <input onChange={() => setMoveTo({gid:gdIndex,tdi:tdIndex})} type="radio" id={'rb-'+gdIndex+','+tdIndex} name="movers" value={'rb-'+gdIndex+','+tdIndex}></input>
-                          </div>
-                          </div> 
+                      <div >{td.titleName}</div>
+                      <div className="text-end">
+                        <input onChange={() => setMoveTo({ gid: gdIndex, tdi: tdIndex })} type="radio" id={'rb-' + gdIndex + ',' + tdIndex} name="movers" value={'rb-' + gdIndex + ',' + tdIndex}></input>
+                      </div>
+                    </div>
                   </h4>
                 ))}
               </div>
             ))}
             <div className="text-end">
-              <button onClick={() =>jump()} className="butt text-end">Move</button>
+              <button onClick={() => jump("jumpto-popover" + props.id)} className="butt w-14 text-end" >Move</button>
             </div>
           </p>
         </div>

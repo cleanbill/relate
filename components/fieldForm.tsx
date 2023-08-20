@@ -4,18 +4,22 @@ import { showDate } from "../utils/renderHelper";
 import ExtendableTextList from "./extendableTextList";
 import Happy from "./happy";
 
-interface FieldFormState { title: string, fields: Array<Field>, mark: string };
 interface FieldFormProps {
-    title: string, fields: Array<Field>, mark: string,
+    title: string, 
+    fields: Array<Field>,
+    id: string, 
+    mark: string,
     updateFieldData: Function,
     deleteTitleData: Function,
     saveData: Function,
-    next: Function
+    next: Function,
+    readonly: boolean
 };
+
 
 const FieldForm = (props: FieldFormProps) => {
 
-    const [state, setState] = useState({ title: props.title, fields: props.fields, mark: props.mark } as FieldFormState);
+    const ID_PREFIX = 'fieldData-'+props.id+"-";
 
     const clearETL = (field: Field) => {
         if (!field.list) {
@@ -33,18 +37,23 @@ const FieldForm = (props: FieldFormProps) => {
             return;
         }
         props.updateFieldData(index, "");
-        const fieldElement = document.getElementById('fieldData-' + index) as HTMLInputElement;
+        const fieldElement = document.getElementById(ID_PREFIX+ index) as HTMLInputElement;
+        if (!fieldElement){
+            return;
+        }
         fieldElement.value = '';
         fieldElement.defaultValue = '';
+        
         const event = new Event("change");
         fieldElement.dispatchEvent(event);
     }
 
     const clearAllData = () => {
-        for (var index = 0; index < state.fields.length; index++) {
-            clearData(state.fields[index], index);
+        for (var index = 0; index < props.fields.length; index++) {
+            clearData(props.fields[index], index);
         }
-        setState(old => ({ title: old.title, fields: [...old.fields], mark: old.mark }));
+        const firstFieldElement = document.getElementById(ID_PREFIX+ '0') as HTMLInputElement;
+        firstFieldElement.focus();
     }
 
     const moveToNext = (field: Field) => {
@@ -52,7 +61,7 @@ const FieldForm = (props: FieldFormProps) => {
     }
 
     const indent = (fieldIndex: number, listNo: number, tabs: number) => {
-        const field = state.fields[fieldIndex];
+        const field = props.fields[fieldIndex];
         const list = field.list;
         if (!list) {
             return;
@@ -66,45 +75,34 @@ const FieldForm = (props: FieldFormProps) => {
             return f;
         })
         field.list = updatedList;
-        const fields = state.fields.map((f: Field, i: number) => {
-            if (i == fieldIndex) {
-                return field;
-            }
-            return f;
-        });
-        setState(old => ({ title: old.title, fields: [...fields], mark: old.mark }));
+        props.updateFieldData(fieldIndex, null, updatedList);
     }
-
-    useEffect(() => {
-        setState(() => ({ title: props.title, fields: [...props.fields], mark: props.mark }));
-        /// work out focus props.fields.f
-    }, [props])
 
     return (
         <>
-            {!state.title || (
+            {!props.title || (
                 <><h5 title='fill in the form' className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {state.title}
-                    <span className="text-sm">- {showDate(state.mark)}
-                        <button onClick={() => { props.deleteTitleData(state.mark) }} className="butt float-right mb-10 w-6 h-5 bg-blue-100">X</button>
+                    {props.title}
+                    <span className="text-sm">- {showDate(props.mark)}
+                        <button onClick={() => { props.deleteTitleData(props.mark) }} className="butt float-right mb-10 w-6 h-5 bg-blue-100">X</button>
                     </span>
                 </h5>
                     <div className="font-normal text-gray-700 dark:text-gray-400">
-                        {state.fields.map((field, index: number) => (
+                        {props.fields.map((field, index: number) => (
                             <div key={index} className="mb-6">
                                 <label title={field.value} className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">{field.fieldName} </label>
                                 {field.fieldComponentType == FieldComponentType.NONE &&
                                     <input onChange={e => props.updateFieldData(index, e.target)}
-                                        key={"fieldData-" + index}
-                                        
-                                        id={"fieldData-" + index}
+                                        readOnly={props.readonly}
+                                        key={ID_PREFIX+ index}                                        
+                                        id={ID_PREFIX+ index}
                                         defaultValue={field.value}
                                         type={field.fieldType}
                                         checked={field.value == 'true'}
                                         className="b)g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block lg:w-full sg:w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                 }
                                 {field.fieldComponentType == FieldComponentType.HAPPY &&
-                                    <Happy id={"fieldData-" + index} onChange={(value: string) => props.updateFieldData(index, value)}
+                                    <Happy id={ID_PREFIX+  index} onChange={(value: string) => props.updateFieldData(index, value)}
                                         defaultValue={field.value}
                                     ></Happy>
                                 }

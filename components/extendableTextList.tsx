@@ -16,7 +16,7 @@ import {
     rectSortingStrategy
 } from "@dnd-kit/sortable";
 
-import SortableItem from "./sortableItem";
+import SortableItem, { Destination } from "./sortableItem";
 import { Field, FieldComponentType, FieldType } from "../app/model";
 
 type Props = {
@@ -127,6 +127,9 @@ const ExtendableTextList = (props: Props) => {
             return false;
         }
         const nextField = props.defaultFields[index + 1];
+        if (!nextField){
+            return false;
+        }
         if (isNaN(nextField.indent)) {
             return false;
         }
@@ -144,28 +147,40 @@ const ExtendableTextList = (props: Props) => {
         return checker;
     }
 
-    const moveIndent = (from: number, to: number): Array<Field> => {
+    const moveIndent = (dest:Destination, to: number): Array<Field> => {
         let updatedFields = fields;
-        for (let index = to; index >= from; index--) {
-            updatedFields = [...moveIt(index, updatedFields)];
+        for (let index = to; index >= dest.tdi; index--) {
+            const location = {tdi:dest.tdi,gid:dest.gid};
+            updatedFields = [...moveIt(location, updatedFields)];
         }
         return updatedFields;
     }
 
-    const moveIt = (index: number, currentFields: Array<Field>): Array<Field> => {
-        const move = props.defaultFields[index];
+    const moveIt = (dest:Destination, currentFields: Array<Field>): Array<Field> => {
+        const move = props.defaultFields[dest.tdi];
         const updatedFields = [
-            ...currentFields.slice(0, index),
-            ...currentFields.slice(index + 1, fields.length)
+            ...currentFields.slice(0, dest.tdi),
+            ...currentFields.slice(dest.tdi + 1, fields.length)
         ];
         props.setFields([...updatedFields]);
-        props.next(move);
+        props.next(move, dest.tdi);
         return updatedFields;
     }
 
     const tomorrow = (index: number) => {
         const lastIndex = lastIndexIndented(index);
-        const newFields = (lastIndex == index) ? moveIt(index, fields) : moveIndent(index, lastIndex);
+        const dest:Destination = {
+            tdi: index,
+            gid: -1
+        }
+        const newFields = (lastIndex == index) ? moveIt(dest, fields) : moveIndent(dest, lastIndex);
+        const reindexed = newFields.map((f: Field, id: number) => { f.id = id; return f });
+        setFields([...reindexed]);
+    }
+
+    const move = (dest:Destination) => {
+        const lastIndex = lastIndexIndented(dest.tdi);
+        const newFields = (lastIndex == dest.tdi) ? moveIt(dest, fields) : moveIndent(dest, lastIndex);
         const reindexed = newFields.map((f: Field, id: number) => { f.id = id; return f });
         setFields([...reindexed]);
     }
@@ -207,8 +222,17 @@ const ExtendableTextList = (props: Props) => {
                     <ul>
                         {fields.map((field: Field, index: number) => (
                             <li className={indentColour(field)} key={index}>
-                                <SortableItem onIndent={(i: number) => indent(index, i)} key={index} indent={field.indent} id={index} handle={true} value={field.value} onReturn={() => add()}
-                                    onChange={fieldChange} manana={(id: number) => tomorrow(id)} delete={(id: number) => deleteField(id)}
+                                <SortableItem onIndent={(i: number) => indent(index, i)} 
+                                              key={index} 
+                                              indent={field.indent} 
+                                              id={index} 
+                                              handle={true} 
+                                              value={field.value} 
+                                              onReturn={() => add()}
+                                              onChange={fieldChange} 
+                                              manana={(id: number) => tomorrow(id)} 
+                                              delete={(id: number) => deleteField(id)}
+                                              move={(destination:Destination) => move(destination)}
                                 />
                             </li>))}
                     </ul>

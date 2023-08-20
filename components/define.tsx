@@ -4,7 +4,9 @@ import { Field, fieldTypesArray } from "../app/model";
 interface DefineProps {
     fields: Array<Field>, group: string, title: string,
     setGroup: Function,
+    addGroup: Function,
     setTitle: Function,
+    addTitle: Function,
     add: Function,
     take: Function,
     updateField: Function
@@ -16,21 +18,29 @@ const Define = (props: DefineProps) => {
     const [needFocus, setNeedFocus] = useState(false);
 
     useEffect(() => {
-        const lastFieldID = "fieldName-" + (props.fields.length - 1);
-        const lastField = document.getElementById(lastFieldID);
-        if (needFocus){
+        if (needFocus) {
+            const lastFieldID = "fieldName-" + (props.fields.length - 1);
+            const lastField = document.getElementById(lastFieldID);
             lastField?.focus();
             setNeedFocus(false);
         }
         //            lastField?.scrollIntoView();
     }, [props.fields.length]);
 
-    const addField = () =>{
+    useEffect(() => {
+        if (needFocus) {
+            const titleField = document.getElementById('titleField');
+            titleField?.focus();
+        }
+        setNeedFocus(false);
+    }, [props.title])
+
+    const addField = () => {
         setNeedFocus(true);
         props.add();
     }
 
-    const takeField = (i:number) => {
+    const takeField = (i: number) => {
         setNeedFocus(true);
         props.take(i);
     }
@@ -43,21 +53,23 @@ const Define = (props: DefineProps) => {
     }
 
     const change = (fn: Function, e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value){
+        if (e.target.value) {
             fn(e.target.value);
         }
     }
 
     const newTitle = () => {
-        props.setTitle();
-        const titleField = document.getElementById('titleField');
-        titleField?.focus();
+        props.addTitle();
+        setNeedFocus(true);
     }
 
     const newGroup = () => {
-        props.setGroup();
-        const txtField = document.getElementById('groupField');
-        txtField?.focus();
+        props.addGroup();
+        setNeedFocus(true);
+    }
+
+    const newType = (index: number) => {
+        props.updateField(index);
     }
 
     return (
@@ -104,7 +116,7 @@ const Define = (props: DefineProps) => {
                                     defaultValue={field.fieldName} type="text" id={"fieldName-" + index} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             </div>
                             <div className="mb-6">
-                                <select value={field.fieldType} onChange={e => props.updateField(index)} id={"fieldType-" + index}
+                                <select defaultValue={field.fieldType} onChange={() => newType(index)} id={"fieldType-" + index}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     {fieldTypesArray().map(fieldType =>
                                         <option key={fieldType + ''} value={fieldType + ''}>{fieldType}</option>
