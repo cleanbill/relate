@@ -5,9 +5,9 @@ import ExtendableTextList from "./extendableTextList";
 import Happy from "./happy";
 
 interface FieldFormProps {
-    title: string, 
+    title: string,
     fields: Array<Field>,
-    id: string, 
+    id: string,
     mark: string,
     updateFieldData: Function,
     deleteTitleData: Function,
@@ -19,7 +19,7 @@ interface FieldFormProps {
 
 const FieldForm = (props: FieldFormProps) => {
 
-    const ID_PREFIX = 'fieldData-'+props.id+"-";
+    const ID_PREFIX = 'fieldData-' + props.id + "-";
 
     const clearETL = (field: Field) => {
         if (!field.list) {
@@ -37,13 +37,13 @@ const FieldForm = (props: FieldFormProps) => {
             return;
         }
         props.updateFieldData(index, "");
-        const fieldElement = document.getElementById(ID_PREFIX+ index) as HTMLInputElement;
-        if (!fieldElement){
+        const fieldElement = document.getElementById(ID_PREFIX + index) as HTMLInputElement;
+        if (!fieldElement) {
             return;
         }
         fieldElement.value = '';
         fieldElement.defaultValue = '';
-        
+
         const event = new Event("change");
         fieldElement.dispatchEvent(event);
     }
@@ -52,7 +52,7 @@ const FieldForm = (props: FieldFormProps) => {
         for (var index = 0; index < props.fields.length; index++) {
             clearData(props.fields[index], index);
         }
-        const firstFieldElement = document.getElementById(ID_PREFIX+ '0') as HTMLInputElement;
+        const firstFieldElement = document.getElementById(ID_PREFIX + '0') as HTMLInputElement;
         firstFieldElement.focus();
     }
 
@@ -93,16 +93,16 @@ const FieldForm = (props: FieldFormProps) => {
                                 <label title={field.value} className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">{field.fieldName} </label>
                                 {field.fieldComponentType == FieldComponentType.NONE &&
                                     <input onChange={e => props.updateFieldData(index, e.target)}
-                                        readOnly={props.readonly}
-                                        key={ID_PREFIX+ index}                                        
-                                        id={ID_PREFIX+ index}
+                                        // readOnly={props.readonly}
+                                        key={ID_PREFIX + index}
+                                        id={ID_PREFIX + index}
                                         defaultValue={field.value}
                                         type={field.fieldType}
                                         checked={field.value == 'true'}
-                                        className="b)g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block lg:w-full sg:w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block lg:w-full sg:w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                 }
                                 {field.fieldComponentType == FieldComponentType.HAPPY &&
-                                    <Happy id={ID_PREFIX+  index} onChange={(value: string) => props.updateFieldData(index, value)}
+                                    <Happy id={ID_PREFIX + index} onChange={(value: string) => props.updateFieldData(index, value)}
                                         defaultValue={field.value}
                                     ></Happy>
                                 }
