@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react';
 import Define from '../components/define';
 import Groups from '../components/groups';
 import FieldForm from '../components/fieldForm';
-import { createNewGroup, createTitleData, createTodoGroup, establish, fillInComponentType, getComponentType, getMark, isSingleton } from '../utils/stateHelper';
+import { createNewGroup, createTitleData, createTodoGroup, establish, fillInComponentType, getComponentType, getMark, isSingleton, matchSetup } from '../utils/stateHelper';
 import { TitleData, Field, FieldComponentType, FieldType, GroupData, Session } from './model';
 import Foot from '../components/foot';
 
 type State = {
-    groupIndex:number, 
+    groupIndex: number,
     titleIndex: number,
-    session:Session
+    session: Session
 }
 
 const Home = () => {
@@ -21,8 +21,8 @@ const Home = () => {
     const [title, setTitle] = useState("");
     const [titleIndex, setTitleIndex] = useState(-1);
     const [fields, setFields] = useState([] as Array<Field>);
-    
-    const [showGroup, setShowGroup] = useState(true);
+
+    const [showGroup, setShowGroup] = useState(false);
     const [mark, setMark] = useState("Unsaved");
     const [readonly, setReadonly] = useState(true);
 
@@ -44,10 +44,12 @@ const Home = () => {
         const startTitle = startGroup.titles[startIndex];
         const sessionKeys = Object.keys(startTitle.sessions);
         const startSession = startTitle.sessions[sessionKeys[0]]; // get first session... should be in date order
-        setState({groupIndex,titleIndex:startIndex,session:startSession})
+        setState({ groupIndex, titleIndex: startIndex, session: startSession })
+        const field = document.getElementById('search-input');
+        field?.focus();
     }, []);
 
-    const setState = (state:State) =>{
+    const setState = (state: State) => {
         setGroupIndex(state.groupIndex);
         setGroup(state.session.group);
         setTitleIndex(state.titleIndex);
@@ -62,9 +64,9 @@ const Home = () => {
         const fieldTypeElement = document.getElementById('fieldType-' + index) as HTMLInputElement;
         const fieldType = fieldTypeElement.value as FieldType;
         const componentType = getComponentType(fieldType);
-        const updatedFields = fields.map((field:Field, i:number) => (i == index) ? { fieldName, fieldType, fieldComponentType: componentType, value: '' } as Field : field);
+        const updatedFields = fields.map((field: Field, i: number) => (i == index) ? { fieldName, fieldType, fieldComponentType: componentType, value: '' } as Field : field);
         const fieldsArray = updatedFields ? updatedFields : [];
-        const filledFields = fieldsArray.map((field:Field) => fillInComponentType(field));
+        const filledFields = fieldsArray.map((field: Field) => fillInComponentType(field));
         rebuild(filledFields);
     }
 
@@ -75,9 +77,9 @@ const Home = () => {
         return target.value;
     }
 
-    const rebuild = (newFields:Array<Field>, gi = groupIndex, ti = titleIndex, m = mark) => {
-        setFields([... newFields]);
-        if (!groupDataList[gi]?.titles[ti]?.sessions[m]?.fields){
+    const rebuild = (newFields: Array<Field>, gi = groupIndex, ti = titleIndex, m = mark) => {
+        setFields([...newFields]);
+        if (!groupDataList[gi]?.titles[ti]?.sessions[m]?.fields) {
             return;
         }
         groupDataList[gi].titles[ti].sessions[m].fields = fields;
@@ -140,7 +142,7 @@ const Home = () => {
         //      if (titleData.sessions) {
         //          setMark('');
         //      }
-        setState({groupIndex,titleIndex,session: startSession})
+        setState({ groupIndex, titleIndex, session: startSession })
     }
 
     const replaceGroupData = (gd: GroupData) => {
@@ -184,7 +186,7 @@ const Home = () => {
     }
 
     const addToGroup = (gd: GroupData) => {
-        const td = getTitleDataByName(gd,title);
+        const td = getTitleDataByName(gd, title);
         if (!td) {
             const session = getCurrentSession(0);
             gd.titles.push(createTitleData(session, title));
@@ -193,7 +195,7 @@ const Home = () => {
         const currentMark = getMark();
         console.log('current mark ' + mark);
         const oldMark = currentMark !== mark || td.singleton;
-        if (oldMark){
+        if (oldMark) {
             return gd;
         }
         const session = td.sessions[mark];
@@ -213,7 +215,7 @@ const Home = () => {
         if (!groupDataInList) {
             return;
         }
-        const groupsTitles = getTitleDataByName(groupDataInList,title);
+        const groupsTitles = getTitleDataByName(groupDataInList, title);
         if (!groupsTitles) {
             return;
         }
@@ -266,14 +268,14 @@ const Home = () => {
     }
 
 
-    const getTitleIndexByName = (selectedGroup:GroupData, name: string): number => {
+    const getTitleIndexByName = (selectedGroup: GroupData, name: string): number => {
         const selectedTitleIndex = selectedGroup.titles.findIndex((td: TitleData) => td.titleName.indexOf(name) > -1);
         setTitleIndex(selectedTitleIndex);
         return selectedTitleIndex;
     }
 
-    const getTitleDataByName = (selectedGroup:GroupData, name: string): TitleData | undefined => {
-        const selectedTitleIndex = getTitleIndexByName(selectedGroup,name);
+    const getTitleDataByName = (selectedGroup: GroupData, name: string): TitleData | undefined => {
+        const selectedTitleIndex = getTitleIndexByName(selectedGroup, name);
         return selectedGroup.titles[selectedTitleIndex];
     }
 
@@ -293,14 +295,14 @@ const Home = () => {
         if (value == null) {
             return;
         }
-        const groupData = (groupIndex == -1)? getGroupDataByName(group): groupDataList[groupIndex];
-        if (!groupData){
-            const {index} = addGroup(group, title);
-            selectGroupTitleFn(index,0);
+        const groupData = (groupIndex == -1) ? getGroupDataByName(group) : groupDataList[groupIndex];
+        if (!groupData) {
+            const { index } = addGroup(group, title);
+            selectGroupTitleFn(index, 0);
             return;
         }
 
-        if (titleIndex == -1 || !groupData){
+        if (titleIndex == -1 || !groupData) {
             addTitle();
             return;
         }
@@ -331,19 +333,19 @@ const Home = () => {
         setTitle("");
     }
 
-    const addGroup = (groupName = "", titleName = ""): {group:GroupData,index:number} => {
+    const addGroup = (groupName = "", titleName = ""): { group: GroupData, index: number } => {
         const index = getGroupIndexByName(group);
-        if (index != -1 ) {
+        if (index != -1) {
             const selectedGroup = groupDataList[index];
-            return {group:selectedGroup, index};
+            return { group: selectedGroup, index };
         }
-        const session: Session = { no: 0, group: groupName, title:titleName, mark: getMark(), fields };
+        const session: Session = { no: 0, group: groupName, title: titleName, mark: getMark(), fields };
         const newGroup = createNewGroup(session, groupName, title);
         groupDataList.push(newGroup);
         commit(groupDataList);
-        
-        setState({groupIndex:groupDataList.length-1,titleIndex:0,session})
-        return {group:newGroup, index:groupDataList.length-1};
+
+        setState({ groupIndex: groupDataList.length - 1, titleIndex: 0, session })
+        return { group: newGroup, index: groupDataList.length - 1 };
     }
 
     const changeLayout = (on: boolean) => {
@@ -356,15 +358,25 @@ const Home = () => {
         }
     }
 
+    const search = (inputElement: HTMLInputElement) => {
+        const match = matchSetup(inputElement.value);
+        groupDataList.forEach((gd: GroupData, groupDataIndex: number) => {
+            gd.titles.forEach((td: TitleData, titleIndex: number) => {
+                if (match(td.titleName)) {
+                    selectGroupTitleFn(groupDataIndex, titleIndex);
+                }
+            });
+        })
+    }
     return (
         <div className="lg:bg-blue-200 ">
             <div className={showGroup ? "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full lg:grid-cols-3 gap-10 " : "lg:bg-blue-200 grid sg:grid-cols-1 w-100 h-full"} >
 
                 <div className='sg:col-span-2'>
                     {showGroup && <a className="blocked">
-                        <Groups selectedGroupIndex={groupIndex} 
-                            selectedTitleIndex={titleIndex} 
-                            groups={groupDataList} 
+                        <Groups selectedGroupIndex={groupIndex}
+                            selectedTitleIndex={titleIndex}
+                            groups={groupDataList}
                             select={selectGroupTitleFn}
                             overrideFields={overrideFieldsFn}
                             updateTitleData={updateTitleDataFn}
@@ -373,8 +385,17 @@ const Home = () => {
                             toggleShow={() => changeLayout(false)}
                         ></Groups>
                     </a>}
-                    {!showGroup && <a className="blocked w-10">
-                        <button className="ml-1" onClick={() => changeLayout(true)}><b>G</b></button>
+                    {!showGroup && <a className="blocked">
+                        <div className="grid grid-cols-[0fr,12fr] gap-2">
+                        <button className="ml-1 butt mb-3" onClick={() => changeLayout(true)}><b>G</b></button>
+                            <input onChange={e => search(e.target)}
+                                id='search-input'
+                                defaultValue=''
+                                type='text'
+                                placeholder="Search"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block lg:w-full sg:w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+
+                        </div>
                     </a>}
                 </div>
 

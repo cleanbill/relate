@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Field, GroupData, Session, TitleData } from "../app/model";
+import { useEffect, useState } from "react";
+import { GroupData, TitleData } from "../app/model";
 import GroupTitle from "./groupTitle";
 import TodoGroup from "./todoGroups";
+import { matchSetup } from "../utils/stateHelper";
 
 interface GroupsProps {
     groups: Array<GroupData>, selectedTitleIndex: number, selectedGroupIndex: number
@@ -43,7 +44,11 @@ const Groups = (props: GroupsProps) => {
 
     const [showGroupIndex, setShowGroupIndex] = useState(0);
 
-
+    useEffect(()=>{
+        const field = document.getElementById('search-input');
+        field?.focus();
+    }, [])
+    
     const deleteGroup = (index: number) => {
         props.deleteGroup(index);
     }
@@ -101,30 +106,16 @@ const Groups = (props: GroupsProps) => {
         props.toggleShow();
     }
 
-    type Matcher = (haystack:string) => boolean;
-
-    const matchSetup = (needle: string): Matcher => {
-        if (!needle) {
-            return (s: string) => false;
-        }
-        return (haystack: string):boolean => {
-            if (!haystack){
-                return false;
-            }
-            return (haystack+'').toLowerCase().indexOf(needle.toLowerCase()) > -1;
-        }
-    }
-
     const search = (inputElement: HTMLInputElement) => {
         const match = matchSetup(inputElement.value);
-        props.groups.forEach((gd: GroupData, groupDataIndex:number) => {
+        props.groups.forEach((gd: GroupData, groupDataIndex: number) => {
             // if (match(gd.groupName)) {
             //     console.log('group name found ', gd.groupName);
             // }
-            gd.titles.forEach((td: TitleData, titleIndex:number) => {
+            gd.titles.forEach((td: TitleData, titleIndex: number) => {
                 if (match(td.titleName)) {
                     // console.log('title name found ', td.titleName);
-                    selectTitle(groupDataIndex,titleIndex);
+                    selectTitle(groupDataIndex, titleIndex);
                 }
                 // const sessions = Object.values(td.sessions);
                 // sessions.forEach((session: Session) => {
@@ -144,7 +135,7 @@ const Groups = (props: GroupsProps) => {
 
             });
 
-        })
+        });
     }
 
     return (

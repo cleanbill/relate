@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Field, FieldComponentType } from "../app/model";
 import { showDate } from "../utils/renderHelper";
 import ExtendableTextList from "./extendableTextList";
@@ -18,6 +18,10 @@ interface FieldFormProps {
 
 
 const FieldForm = (props: FieldFormProps) => {
+
+    useEffect(() =>{
+        console.log('updated');
+    },[props]);
 
     const ID_PREFIX = 'fieldData-' + props.id + "-";
 
@@ -93,7 +97,7 @@ const FieldForm = (props: FieldFormProps) => {
                                 <label title={field.value} className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">{field.fieldName} </label>
                                 {field.fieldComponentType == FieldComponentType.NONE &&
                                     <input onChange={e => props.updateFieldData(index, e.target)}
-                                        // readOnly={props.readonly}
+                                             // readOnly={props.readonly}
                                         key={ID_PREFIX + index}
                                         id={ID_PREFIX + index}
                                         defaultValue={field.value}

@@ -1,4 +1,4 @@
-import { Field, FieldComponentType, FieldType, GroupData, Session, TitleData } from "../app/model";
+import { Field, FieldComponentType, FieldType, GroupData, Matcher, Session, TitleData } from "../app/model";
 
 const json = (text: string): any => {
   try {
@@ -7,6 +7,19 @@ const json = (text: string): any => {
     return text;
   }
 };
+
+
+export const matchSetup = (needle: string): Matcher => {
+  if (!needle) {
+      return (s: string) => false;
+  }
+  return (haystack: string):boolean => {
+      if (!haystack){
+          return false;
+      }
+      return (haystack+'').toLowerCase().indexOf(needle.toLowerCase()) > -1;
+  }
+}
 
 function establish<T>(
   statename: string,

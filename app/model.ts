@@ -62,3 +62,6 @@ export type TitleData = {
     singleton: boolean,
     sessions: Record<string, Session>
 }
+
+
+export type Matcher = (haystack:string) => boolean;
